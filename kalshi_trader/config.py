@@ -63,6 +63,45 @@ class BacktestConfig:
     slippage_cents: int = 1  # 1 cent slippage assumption
     data_dir: str = "backtest_data"
 
+    # Anti-contamination settings
+    # Only backtest markets that closed AFTER this date to reduce
+    # the chance Claude saw outcomes in training data.
+    # Claude Sonnet 4.6 training cutoff is ~early 2025.
+    min_close_date: str = field(
+        default_factory=lambda: os.getenv("BACKTEST_MIN_CLOSE_DATE", "2025-04-01")
+    )
+    anonymize_markets: bool = field(
+        default_factory=lambda: os.getenv("BACKTEST_ANONYMIZE", "false").lower() == "true"
+    )
+    hide_market_price: bool = field(
+        default_factory=lambda: os.getenv("BACKTEST_HIDE_PRICE", "false").lower() == "true"
+    )
+
+
+@dataclass
+class ScheduleConfig:
+    """Trading frequency / scheduling configuration."""
+
+    # How often to run the scan-analyze-trade cycle
+    mode: str = field(
+        default_factory=lambda: os.getenv("SCHEDULE_MODE", "daily")
+    )  # "continuous", "hourly", "daily", "manual"
+    scan_interval_minutes: int = field(
+        default_factory=lambda: int(os.getenv("SCAN_INTERVAL_MINUTES", "60"))
+    )
+    # Market category preferences (comma-separated)
+    # Options: economics, politics, weather, crypto, sports, science, finance
+    preferred_categories: str = field(
+        default_factory=lambda: os.getenv("PREFERRED_CATEGORIES", "economics,politics,finance")
+    )
+    # Time-of-day windows (UTC) — only trade during these hours
+    trading_start_hour: int = 13  # 1 PM UTC = 9 AM ET
+    trading_end_hour: int = 21  # 9 PM UTC = 5 PM ET
+    # Max API spend per day on Claude analysis
+    max_daily_api_cost_usd: float = field(
+        default_factory=lambda: float(os.getenv("MAX_DAILY_API_COST", "5.0"))
+    )
+
 
 @dataclass
 class AppConfig:
@@ -72,3 +111,4 @@ class AppConfig:
     claude: ClaudeConfig = field(default_factory=ClaudeConfig)
     trading: TradingConfig = field(default_factory=TradingConfig)
     backtest: BacktestConfig = field(default_factory=BacktestConfig)
+    schedule: ScheduleConfig = field(default_factory=ScheduleConfig)

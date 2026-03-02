@@ -2,12 +2,14 @@
 """Kalshi AI Trading & Backtesting System - CLI Entry Point.
 
 Usage:
-    python -m kalshi_trader scan          # Scan markets and show AI analysis
-    python -m kalshi_trader trade         # Dry-run trade signals
-    python -m kalshi_trader trade --live  # Live trading (use with caution!)
-    python -m kalshi_trader backtest      # Backtest against settled markets
-    python -m kalshi_trader collect       # Collect market data for backtesting
-    python -m kalshi_trader analyze TICKER  # Deep-analyze a single market
+    python -m kalshi_trader scan              # Scan markets and show AI analysis
+    python -m kalshi_trader trade             # Dry-run trade signals
+    python -m kalshi_trader trade --live      # Live trading (use with caution!)
+    python -m kalshi_trader backtest          # Backtest against settled markets
+    python -m kalshi_trader backtest --blind  # Backtest with blind mode (anti-anchoring)
+    python -m kalshi_trader backtest --check-contamination  # Run contamination comparison
+    python -m kalshi_trader collect           # Collect market data for backtesting
+    python -m kalshi_trader analyze TICKER    # Deep-analyze a single market
 """
 
 import argparse
@@ -81,7 +83,7 @@ def cmd_trade(args, config: AppConfig):
     dry_run = not args.live
 
     if not dry_run:
-        print("\n⚠  LIVE TRADING MODE ⚠")
+        print("\n!!  LIVE TRADING MODE  !!")
         print("This will place REAL orders on Kalshi.")
         confirm = input("Type 'YES' to confirm: ")
         if confirm != "YES":
@@ -99,8 +101,16 @@ def cmd_trade(args, config: AppConfig):
 def cmd_backtest(args, config: AppConfig):
     """Run a backtest against settled markets."""
     client = KalshiClient(config.kalshi)
-    analyst = ClaudeAnalyst(config.claude)
+
+    # Configure analyst based on flags
+    blind_mode = args.blind or config.backtest.hide_market_price
+    anonymize = args.anonymize or config.backtest.anonymize_markets
+    analyst = ClaudeAnalyst(config.claude, blind_mode=blind_mode, anonymize=anonymize)
     backtester = Backtester(config, analyst)
+
+    # Override min_close_date if specified
+    if args.min_date:
+        config.backtest.min_close_date = args.min_date
 
     # Load data from file or fetch from API
     if args.data_file:
@@ -122,20 +132,34 @@ def cmd_backtest(args, config: AppConfig):
         print("No settled markets available. Use 'collect' command first.")
         return
 
-    # Run backtest with progress
+    # Print configuration
+    print(f"\n  Configuration:")
+    print(f"  Initial Balance:     ${config.backtest.initial_balance:,.2f}")
+    print(f"  Kelly Fraction:      {config.trading.kelly_fraction}")
+    print(f"  Min Edge Threshold:  {config.trading.min_edge_threshold:.1%}")
+    print(f"  Analyst Mode:        {'BLIND (no market price)' if blind_mode else 'Standard'}")
+    print(f"  Anonymize Markets:   {'YES' if anonymize else 'No'}")
+    print(f"  Min Close Date:      {config.backtest.min_close_date}")
+
+    # Progress bar
     def progress(done, total):
         pct = done / total * 100
         bar = "█" * int(pct / 2) + "░" * (50 - int(pct / 2))
         print(f"\r  [{bar}] {pct:.0f}% ({done}/{total})", end="", flush=True)
 
-    print(f"\nRunning backtest on {len(settled)} markets...")
-    print(f"  Initial Balance: ${config.backtest.initial_balance:,.2f}")
-    print(f"  Kelly Fraction:  {config.trading.kelly_fraction}")
-    print(f"  Min Edge:        {config.trading.min_edge_threshold:.1%}")
-    print()
-
-    result = backtester.run(settled, batch_size=args.batch_size, progress_callback=progress)
-    print()  # newline after progress bar
+    # Run contamination comparison or normal backtest
+    if args.check_contamination:
+        print(f"\n  Running CONTAMINATION CHECK (two backtests)...")
+        comparison = backtester.run_contamination_comparison(
+            markets, batch_size=args.batch_size
+        )
+        result = comparison["clean"]
+    else:
+        print(f"\n  Running backtest...")
+        result = backtester.run(
+            markets, batch_size=args.batch_size, progress_callback=progress
+        )
+        print()  # newline after progress bar
 
     backtester.print_report(result)
 
@@ -214,14 +238,16 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python -m kalshi_trader scan                    # Scan and analyze markets
-  python -m kalshi_trader scan --limit 5          # Analyze top 5 markets
-  python -m kalshi_trader analyze TICKER-HERE     # Deep-analyze one market
-  python -m kalshi_trader backtest --limit 50     # Backtest on 50 settled markets
-  python -m kalshi_trader backtest --data-file backtest_data/markets.json
-  python -m kalshi_trader collect --limit 200     # Collect data for backtesting
-  python -m kalshi_trader trade                   # Dry-run trade signals
-  python -m kalshi_trader trade --live            # LIVE trading
+  python -m kalshi_trader scan                          # Scan and analyze markets
+  python -m kalshi_trader scan --limit 5                # Analyze top 5 markets
+  python -m kalshi_trader analyze TICKER-HERE           # Deep-analyze one market
+  python -m kalshi_trader backtest --limit 50           # Backtest 50 settled markets
+  python -m kalshi_trader backtest --blind              # Backtest without price anchoring
+  python -m kalshi_trader backtest --check-contamination  # Test for data leakage
+  python -m kalshi_trader backtest --min-date 2025-06-01  # Only post-June-2025 markets
+  python -m kalshi_trader collect --limit 200           # Collect data for backtesting
+  python -m kalshi_trader trade                         # Dry-run trade signals
+  python -m kalshi_trader trade --live                  # LIVE trading
         """,
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
@@ -239,11 +265,33 @@ Examples:
 
     # backtest
     p_bt = subparsers.add_parser("backtest", help="Backtest against settled markets")
-    p_bt.add_argument("--limit", type=int, default=50, help="Number of markets")
+    p_bt.add_argument("--limit", type=int, default=50, help="Number of markets to fetch")
     p_bt.add_argument("--data-file", help="Load data from file instead of API")
     p_bt.add_argument("--save-data", action="store_true", help="Save fetched data")
-    p_bt.add_argument("--batch-size", type=int, default=5, help="Batch size for analysis")
+    p_bt.add_argument("--batch-size", type=int, default=5, help="Markets per Claude call")
     p_bt.add_argument("-o", "--output", help="Save results to JSON file")
+    # Anti-contamination options
+    p_bt.add_argument(
+        "--blind", action="store_true",
+        help="Hide market prices from Claude (anti-anchoring)"
+    )
+    p_bt.add_argument(
+        "--anonymize", action="store_true",
+        help="Strip names/dates from market titles (reduce data leakage)"
+    )
+    p_bt.add_argument(
+        "--min-date", type=str, default=None,
+        help="Only backtest markets closed after this date (YYYY-MM-DD). "
+             "Default: 2025-04-01 (after Claude's training cutoff)"
+    )
+    p_bt.add_argument(
+        "--check-contamination", action="store_true",
+        help="Run two backtests (filtered vs unfiltered) to measure contamination"
+    )
+    p_bt.add_argument(
+        "--no-filter", action="store_true",
+        help="Disable contamination filter (test all markets)"
+    )
 
     # collect
     p_collect = subparsers.add_parser("collect", help="Collect market data for backtesting")

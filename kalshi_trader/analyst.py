@@ -1,13 +1,19 @@
 """Claude Sonnet 4.6 market analyst - the brains of the operation.
 
 Uses Claude to analyze prediction markets and estimate true probabilities.
-The key insight: prediction markets are efficient but not perfect. Claude can
-read the question, consider context, news, base rates, and reasoning to find
-edges where the market misprices an outcome.
+
+v2 improvements:
+- Anti-anchoring: option to hide market price so Claude reasons independently
+- Structured Fermi reasoning: forces base-rate thinking
+- Anonymization mode: strips identifiers to reduce training data leakage
+- Explicit debiasing instructions
+- Confidence calibration nudges
 """
 
+import hashlib
 import json
 import logging
+import re
 from datetime import datetime
 from typing import Optional
 
@@ -18,90 +24,219 @@ from .models import Market, MarketAnalysis, Side
 
 logger = logging.getLogger(__name__)
 
+# ---- System Prompts ----
+
 SYSTEM_PROMPT = """\
-You are an expert prediction market analyst and quantitative trader. Your job is
-to estimate the TRUE probability of events described in prediction market contracts,
-then compare your estimate to the market price to find trading edges.
+You are an expert prediction market analyst and quantitative forecaster.
+Your job is to estimate the TRUE probability of events, then identify where
+prediction markets misprice outcomes.
 
-You must think like a superforecaster:
-- Use base rates and reference classes
-- Consider multiple scenarios and weight them
-- Account for known unknowns and update priors
-- Be well-calibrated: when you say 70%, it should happen ~70% of the time
-- Be honest about uncertainty - don't overfit to narratives
+## Your Forecasting Method (follow this exact sequence)
 
-When analyzing a market, you will:
-1. Understand what the contract is actually asking (exact resolution criteria)
-2. Consider the current date and time horizon
-3. Think about base rates for similar events
-4. Identify key factors that could shift the probability
-5. Assess what information the market might be missing
-6. Provide a probability estimate with reasoning
+1. **Parse the question**: What EXACTLY does the contract ask? What are the
+   precise resolution criteria?
 
-CRITICAL: Your probability must be YOUR honest best estimate, not just agreeing
-with the market. The whole point is to find mispricings. Be bold but calibrated.
+2. **Base rate**: Before considering specifics, what is the historical base
+   rate for this TYPE of event? (e.g., "incumbent presidents win re-election
+   ~65% of the time", "monthly CPI surprises to the upside ~40% of the time")
 
-Output your analysis as valid JSON matching the requested schema.
+3. **Update from specifics**: What current information shifts the probability
+   UP or DOWN from the base rate? List each factor with its directional effect.
+
+4. **Consider the other side**: Steelman the opposing view. What would need to
+   be true for the OPPOSITE outcome? How likely is that scenario?
+
+5. **Final estimate**: Combine into a single probability. Check: does this
+   feel calibrated? When you say 70%, do events like this happen ~70% of the time?
+
+## Calibration Rules
+
+- DO NOT anchor to the market price. Form your estimate INDEPENDENTLY first.
+- If you are uncertain, your probability should be CLOSER TO 50%, not further.
+- Extreme probabilities (>90% or <10%) require EXTREME evidence. Default to
+  more moderate estimates unless the evidence is overwhelming.
+- Your edge comes from BETTER REASONING, not from being more extreme.
+- A 5% edge on a well-calibrated estimate is more valuable than a 20% edge
+  on an overconfident one.
+
+## Output
+
+Respond with ONLY a valid JSON object matching the requested schema.
+No markdown, no explanation outside the JSON.
 """
 
-ANALYSIS_PROMPT = """\
-Analyze this prediction market and estimate the TRUE probability:
+SYSTEM_PROMPT_BLIND = """\
+You are an expert prediction market analyst and quantitative forecaster.
+Your job is to estimate the TRUE probability of events described below.
 
-**Market**: {title}
+IMPORTANT: You are estimating probability WITHOUT seeing the current market
+price. This is intentional — it prevents anchoring bias and lets you form
+an independent estimate.
+
+## Your Forecasting Method (follow this exact sequence)
+
+1. **Parse the question**: What EXACTLY is being asked?
+2. **Base rate**: What is the historical base rate for this TYPE of event?
+3. **Update from specifics**: What factors shift probability from the base rate?
+4. **Steelman the opposite**: What would make the other outcome happen?
+5. **Final calibrated estimate**: Combine into a single probability.
+
+## Calibration Rules
+
+- If uncertain, stay CLOSER TO 50%.
+- Extreme probabilities (>90% or <10%) require extreme evidence.
+- Better to be slightly wrong but well-calibrated than boldly wrong.
+
+Respond with ONLY a valid JSON object. No markdown, no extra text.
+"""
+
+# ---- Analysis Prompts ----
+
+ANALYSIS_PROMPT = """\
+Estimate the TRUE probability for this prediction market contract:
+
+**Question**: {title}
 {subtitle}
 
-**Current Market Price**: {market_price} cents (implies {implied_prob:.1%} probability)
-**Volume**: {volume:,} contracts traded
-**Open Interest**: {open_interest:,}
-**Close/Expiration**: {close_time}
-**Current Date**: {current_date}
+**Market Price**: {market_price} cents ({implied_prob:.1%} implied probability)
+**Volume**: {volume:,} contracts | **Open Interest**: {open_interest:,}
+**Closes**: {close_time}
+**Analysis Date**: {current_date}
 
-Please analyze this market and respond with a JSON object:
+Use your structured forecasting method. Respond with this JSON:
 {{
-    "ai_probability": <your estimated true probability, 0.0 to 1.0>,
-    "confidence": <how confident you are in your estimate, 0.0 to 1.0>,
-    "reasoning": "<detailed reasoning for your probability estimate>",
-    "key_factors": ["<factor 1>", "<factor 2>", ...],
-    "risk_factors": ["<risk 1>", "<risk 2>", ...]
+    "base_rate": <base rate probability for this type of event, 0.0-1.0>,
+    "ai_probability": <your final calibrated estimate, 0.0-1.0>,
+    "confidence": <how confident in your estimate, 0.0-1.0>,
+    "reasoning": "<step-by-step reasoning: base rate -> updates -> final>",
+    "key_factors": ["<factor shifting probability up/down>", ...],
+    "risk_factors": ["<what could make you wrong>", ...]
 }}
+"""
 
-Think step by step. Consider base rates, current events, and what information
-might not be priced in. Be specific in your reasoning.
+ANALYSIS_PROMPT_BLIND = """\
+Estimate the TRUE probability for this prediction market contract:
+
+**Question**: {title}
+{subtitle}
+
+**Volume**: {volume:,} contracts traded
+**Closes**: {close_time}
+**Analysis Date**: {current_date}
+
+NOTE: The current market price is HIDDEN. Estimate the probability purely
+from your reasoning about the question. This prevents anchoring bias.
+
+Use your structured forecasting method. Respond with this JSON:
+{{
+    "base_rate": <base rate probability for this type of event, 0.0-1.0>,
+    "ai_probability": <your final calibrated estimate, 0.0-1.0>,
+    "confidence": <how confident in your estimate, 0.0-1.0>,
+    "reasoning": "<step-by-step reasoning: base rate -> updates -> final>",
+    "key_factors": ["<factor shifting probability up/down>", ...],
+    "risk_factors": ["<what could make you wrong>", ...]
+}}
 """
 
 BATCH_ANALYSIS_PROMPT = """\
-Analyze these prediction markets and rank them by trading opportunity.
-For each, estimate the TRUE probability and identify any edge vs the market price.
+Analyze these prediction markets. For EACH one, estimate the TRUE probability.
 
-Markets to analyze:
+Markets:
 {markets_text}
 
-Current Date: {current_date}
+Analysis Date: {current_date}
 
-Respond with a JSON array of objects, one per market, each with:
-{{
+For EACH market, follow this process:
+1. Identify the base rate for this type of event
+2. Update from current specifics
+3. Arrive at a calibrated probability
+
+Respond with a JSON array, one object per market:
+[
+  {{
     "ticker": "<market ticker>",
-    "ai_probability": <true probability estimate, 0.0-1.0>,
-    "confidence": <confidence in estimate, 0.0-1.0>,
-    "reasoning": "<brief reasoning>",
+    "base_rate": <base rate, 0.0-1.0>,
+    "ai_probability": <calibrated estimate, 0.0-1.0>,
+    "confidence": <confidence, 0.0-1.0>,
+    "reasoning": "<brief step-by-step>",
     "key_factors": ["<factor>", ...],
     "risk_factors": ["<risk>", ...]
-}}
+  }},
+  ...
+]
 
 Rank by size of edge (difference between your estimate and market price).
-Focus on markets where you have genuine insight or see clear mispricings.
+"""
+
+BATCH_ANALYSIS_PROMPT_BLIND = """\
+Analyze these prediction markets. For EACH one, estimate the TRUE probability.
+Market prices are HIDDEN to prevent anchoring bias.
+
+Markets:
+{markets_text}
+
+Analysis Date: {current_date}
+
+For EACH market, follow this process:
+1. Identify the base rate for this type of event
+2. Update from current specifics
+3. Arrive at a calibrated probability
+
+Respond with a JSON array, one object per market:
+[
+  {{
+    "ticker": "<market ticker>",
+    "base_rate": <base rate, 0.0-1.0>,
+    "ai_probability": <calibrated estimate, 0.0-1.0>,
+    "confidence": <confidence, 0.0-1.0>,
+    "reasoning": "<brief step-by-step>",
+    "key_factors": ["<factor>", ...],
+    "risk_factors": ["<risk>", ...]
+  }},
+  ...
+]
 """
 
 
-class ClaudeAnalyst:
-    """Uses Claude Sonnet 4.6 to analyze prediction markets."""
+def _anonymize_title(title: str) -> str:
+    """Strip specific names/dates that might trigger training data recall.
 
-    def __init__(self, config: ClaudeConfig):
+    Replaces specific proper nouns with generic labels while keeping the
+    structure of the question intact.
+    """
+    # Replace specific dates with relative references
+    title = re.sub(r"\b(January|February|March|April|May|June|July|August|"
+                   r"September|October|November|December)\s+\d{1,2},?\s*\d{4}\b",
+                   "[DATE]", title)
+    title = re.sub(r"\b\d{1,2}/\d{1,2}/\d{4}\b", "[DATE]", title)
+
+    # Replace dollar amounts
+    title = re.sub(r"\$[\d,]+\.?\d*\s*(billion|million|trillion|B|M|T)?",
+                   "$[AMOUNT]", title)
+
+    return title
+
+
+class ClaudeAnalyst:
+    """Uses Claude Sonnet 4.6 to analyze prediction markets.
+
+    Supports two modes:
+    - Standard: Shows market price (for live trading)
+    - Blind: Hides market price (for unbiased backtesting)
+    """
+
+    def __init__(self, config: ClaudeConfig, blind_mode: bool = False,
+                 anonymize: bool = False):
         self.config = config
         self.client = anthropic.Anthropic(api_key=config.api_key)
+        self.blind_mode = blind_mode
+        self.anonymize = anonymize
         self.call_count = 0
         self.total_input_tokens = 0
         self.total_output_tokens = 0
+
+    def _get_system_prompt(self) -> str:
+        return SYSTEM_PROMPT_BLIND if self.blind_mode else SYSTEM_PROMPT
 
     def _call_claude(self, user_prompt: str) -> str:
         """Make a call to Claude and track usage."""
@@ -109,7 +244,7 @@ class ClaudeAnalyst:
             model=self.config.model,
             max_tokens=self.config.max_tokens,
             temperature=self.config.temperature,
-            system=SYSTEM_PROMPT,
+            system=self._get_system_prompt(),
             messages=[{"role": "user", "content": user_prompt}],
         )
 
@@ -127,18 +262,39 @@ class ClaudeAnalyst:
 
         return text.strip()
 
+    def _prepare_title(self, market: Market) -> tuple[str, str]:
+        """Prepare market title/subtitle, optionally anonymizing."""
+        title = market.title
+        subtitle = market.subtitle
+        if self.anonymize:
+            title = _anonymize_title(title)
+            subtitle = _anonymize_title(subtitle)
+        return title, subtitle
+
     def analyze_market(self, market: Market) -> MarketAnalysis:
         """Analyze a single market and return probability estimate + reasoning."""
-        prompt = ANALYSIS_PROMPT.format(
-            title=market.title,
-            subtitle=market.subtitle,
-            market_price=market.yes_mid,
-            implied_prob=market.implied_probability,
-            volume=market.volume,
-            open_interest=market.open_interest,
-            close_time=market.close_time or "Unknown",
-            current_date=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
-        )
+        title, subtitle = self._prepare_title(market)
+
+        if self.blind_mode:
+            prompt = ANALYSIS_PROMPT_BLIND.format(
+                title=title,
+                subtitle=subtitle,
+                volume=market.volume,
+                open_interest=market.open_interest,
+                close_time=market.close_time or "Unknown",
+                current_date=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            )
+        else:
+            prompt = ANALYSIS_PROMPT.format(
+                title=title,
+                subtitle=subtitle,
+                market_price=market.yes_mid,
+                implied_prob=market.implied_probability,
+                volume=market.volume,
+                open_interest=market.open_interest,
+                close_time=market.close_time or "Unknown",
+                current_date=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            )
 
         try:
             result_text = self._call_claude(prompt)
@@ -150,7 +306,7 @@ class ClaudeAnalyst:
 
             # Determine recommended side
             recommended_side = None
-            if abs(edge) > 0.02:  # at least 2% edge
+            if abs(edge) > 0.02:
                 recommended_side = Side.YES if edge > 0 else Side.NO
 
             analysis = MarketAnalysis(
@@ -167,19 +323,19 @@ class ClaudeAnalyst:
             )
 
             logger.info(
-                "Analyzed %s: AI=%.1f%% Market=%.1f%% Edge=%.1f%% Confidence=%.1f%%",
+                "Analyzed %s: AI=%.1f%% Market=%.1f%% Edge=%.1f%% Conf=%.0f%% %s",
                 market.ticker,
                 ai_prob * 100,
                 market_prob * 100,
                 edge * 100,
                 analysis.confidence * 100,
+                "[BLIND]" if self.blind_mode else "",
             )
 
             return analysis
 
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             logger.error("Failed to parse Claude response for %s: %s", market.ticker, e)
-            # Return neutral analysis on parse failure
             return MarketAnalysis(
                 ticker=market.ticker,
                 market_title=market.title,
@@ -195,19 +351,31 @@ class ClaudeAnalyst:
         if not markets:
             return []
 
-        # Build market descriptions
         lines = []
         for i, m in enumerate(markets, 1):
-            lines.append(
-                f"{i}. [{m.ticker}] {m.title}\n"
-                f"   Price: {m.yes_mid}c ({m.implied_probability:.1%}) | "
-                f"Volume: {m.volume:,} | Closes: {m.close_time or 'Unknown'}"
-            )
+            title, _ = self._prepare_title(m)
+            if self.blind_mode:
+                lines.append(
+                    f"{i}. [{m.ticker}] {title}\n"
+                    f"   Volume: {m.volume:,} | Closes: {m.close_time or 'Unknown'}"
+                )
+            else:
+                lines.append(
+                    f"{i}. [{m.ticker}] {title}\n"
+                    f"   Price: {m.yes_mid}c ({m.implied_probability:.1%}) | "
+                    f"Volume: {m.volume:,} | Closes: {m.close_time or 'Unknown'}"
+                )
 
-        prompt = BATCH_ANALYSIS_PROMPT.format(
-            markets_text="\n".join(lines),
-            current_date=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
-        )
+        if self.blind_mode:
+            prompt = BATCH_ANALYSIS_PROMPT_BLIND.format(
+                markets_text="\n".join(lines),
+                current_date=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            )
+        else:
+            prompt = BATCH_ANALYSIS_PROMPT.format(
+                markets_text="\n".join(lines),
+                current_date=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            )
 
         try:
             result_text = self._call_claude(prompt)
