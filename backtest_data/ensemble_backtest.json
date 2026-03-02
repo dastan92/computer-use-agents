@@ -1,0 +1,2024 @@
+{
+  "evaluations": [
+    {
+      "label": "bayesian",
+      "n": 80,
+      "accuracy": 0.85,
+      "brier": 0.1289,
+      "market_brier": 0.1346,
+      "brier_edge": 0.0057,
+      "trades": 29,
+      "trade_wr": 0.517,
+      "trade_pnl": 38.1
+    },
+    {
+      "label": "contrarian",
+      "n": 80,
+      "accuracy": 0.85,
+      "brier": 0.1257,
+      "market_brier": 0.1346,
+      "brier_edge": 0.0089,
+      "trades": 57,
+      "trade_wr": 0.509,
+      "trade_pnl": 39.1
+    },
+    {
+      "label": "base_rate",
+      "n": 80,
+      "accuracy": 0.887,
+      "brier": 0.1347,
+      "market_brier": 0.1346,
+      "brier_edge": -0.0001,
+      "trades": 69,
+      "trade_wr": 0.217,
+      "trade_pnl": -58.5
+    },
+    {
+      "label": "mean_reversion",
+      "n": 80,
+      "accuracy": 0.838,
+      "brier": 0.1286,
+      "market_brier": 0.1346,
+      "brier_edge": 0.006,
+      "trades": 29,
+      "trade_wr": 0.621,
+      "trade_pnl": 28.1
+    },
+    {
+      "label": "ensemble_4",
+      "n": 80,
+      "accuracy": 0.863,
+      "brier": 0.1255,
+      "market_brier": 0.1346,
+      "brier_edge": 0.0092,
+      "trades": 45,
+      "trade_wr": 0.311,
+      "trade_pnl": -12.7
+    },
+    {
+      "label": "top3_no_mr",
+      "n": 80,
+      "accuracy": 0.875,
+      "brier": 0.1267,
+      "market_brier": 0.1346,
+      "brier_edge": 0.0079,
+      "trades": 48,
+      "trade_wr": 0.354,
+      "trade_pnl": -1.5
+    },
+    {
+      "label": "bayes_baserate",
+      "n": 80,
+      "accuracy": 0.863,
+      "brier": 0.129,
+      "market_brier": 0.1346,
+      "brier_edge": 0.0057,
+      "trades": 40,
+      "trade_wr": 0.325,
+      "trade_pnl": -3.9
+    },
+    {
+      "label": "bayes_contrarian",
+      "n": 80,
+      "accuracy": 0.85,
+      "brier": 0.1251,
+      "market_brier": 0.1346,
+      "brier_edge": 0.0095,
+      "trades": 47,
+      "trade_wr": 0.447,
+      "trade_pnl": 19.6
+    }
+  ],
+  "strategy_results": {
+    "bayesian": [
+      {
+        "ticker": "KXG7LEADEROUT-36-KS",
+        "ai_probability": 0.12,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXG7LEADEROUT-36-SI",
+        "ai_probability": 0.75,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PPAR",
+        "ai_probability": 0.23,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-RPRE",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PDAV",
+        "ai_probability": 0.18,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-LANT",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-JM",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-NM",
+        "ai_probability": 0.32,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-GB",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-DB",
+        "ai_probability": 0.62,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-JT",
+        "ai_probability": 0.82,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-OS",
+        "ai_probability": 0.23,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-AA",
+        "ai_probability": 0.19,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-YSK",
+        "ai_probability": 0.73,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "JOBLESS-21AUG28-C350",
+        "ai_probability": 0.41,
+        "confidence": 0.9
+      },
+      {
+        "ticker": "NONCOMPETEBAN",
+        "ai_probability": 0.42,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXROMANIATOP-30-GS",
+        "ai_probability": 0.73,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXROMANIATOP-30-CG",
+        "ai_probability": 0.3,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-SAR",
+        "ai_probability": 0.27,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHL",
+        "ai_probability": 0.62,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHLOE",
+        "ai_probability": 0.18,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-AMY",
+        "ai_probability": 0.17,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHI",
+        "ai_probability": 0.18,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXHALFTRIL-28",
+        "ai_probability": 0.68,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-29",
+        "ai_probability": 0.6,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXHALFTRIL-30",
+        "ai_probability": 0.73,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXHALFTRIL-27",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXGERCOALITION-30-GER",
+        "ai_probability": 0.2,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXGERCOALITION-30-JC",
+        "ai_probability": 0.16,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "BTCETHATH-29DEC31",
+        "ai_probability": 0.38,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXTRUMPPARDONS-29JAN21-TPET",
+        "ai_probability": 0.58,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXPENNYCONGRESS-29",
+        "ai_probability": 0.45,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXMTMCK-29",
+        "ai_probability": 0.65,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXEVCREDITS-29",
+        "ai_probability": 0.82,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXCABOUT-29-KN",
+        "ai_probability": 0.19,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCABOUT-29-LCD",
+        "ai_probability": 0.16,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCABOUT-29-SM",
+        "ai_probability": 0.12,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXUSNY-29",
+        "ai_probability": 0.3,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXUSIL-29",
+        "ai_probability": 0.32,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTJUDE-29",
+        "ai_probability": 0.72,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXDEVASANTRIX",
+        "ai_probability": 0.8,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCATHOLICWISCNOSIN",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXBECERRABRAIDWOOD",
+        "ai_probability": 0.76,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXBARNESFELIX",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXAJTOSSEO",
+        "ai_probability": 0.68,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXADVOCATEBECERRA",
+        "ai_probability": 0.42,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "GOOGLEUS-28DEC31",
+        "ai_probability": 0.58,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CDP",
+        "ai_probability": 0.18,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JCP",
+        "ai_probability": 0.05,
+        "confidence": 0.9
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JIP",
+        "ai_probability": 0.15,
+        "confidence": 0.85
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CRA",
+        "ai_probability": 0.12,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "OPENAISUIT",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXPCOIE-28",
+        "ai_probability": 0.75,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXIPOFANNIE-26MAR01",
+        "ai_probability": 0.3,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXFREDDIE-26MAR01",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXFREDDIE-26FEB01",
+        "ai_probability": 0.48,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXAPSUIT-28",
+        "ai_probability": 0.42,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26JAN01",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26MAR01",
+        "ai_probability": 0.19,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26FEB01",
+        "ai_probability": 0.17,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOSTARLINK-26MAR01",
+        "ai_probability": 0.7,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSPACEX-26JAN01",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSPACEX-26FEB01",
+        "ai_probability": 0.46,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-25DEC01",
+        "ai_probability": 0.62,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-25OCT01",
+        "ai_probability": 0.4,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26JAN01",
+        "ai_probability": 0.36,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26MAR01",
+        "ai_probability": 0.42,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26FEB01",
+        "ai_probability": 0.7,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-26JAN01",
+        "ai_probability": 0.75,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-25DEC01",
+        "ai_probability": 0.72,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-25SEP01",
+        "ai_probability": 0.2,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXIPOKLARNA-25OCT01",
+        "ai_probability": 0.46,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25NOV01",
+        "ai_probability": 0.6,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPODISCORD-25DEC01",
+        "ai_probability": 0.32,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26JAN01",
+        "ai_probability": 0.33,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26FEB01",
+        "ai_probability": 0.42,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOANDURIL-25DEC01",
+        "ai_probability": 0.17,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26JAN01",
+        "ai_probability": 0.24,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26FEB01",
+        "ai_probability": 0.24,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26MAR01",
+        "ai_probability": 0.16,
+        "confidence": 0.6
+      }
+    ],
+    "contrarian": [
+      {
+        "ticker": "KXG7LEADEROUT-36-KS",
+        "ai_probability": 0.15,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXG7LEADEROUT-36-SI",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PPAR",
+        "ai_probability": 0.25,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-RPRE",
+        "ai_probability": 0.39,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PDAV",
+        "ai_probability": 0.2,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-LANT",
+        "ai_probability": 0.24,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-JM",
+        "ai_probability": 0.25,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-NM",
+        "ai_probability": 0.35,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-GB",
+        "ai_probability": 0.68,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-DB",
+        "ai_probability": 0.58,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-JT",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-OS",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-AA",
+        "ai_probability": 0.21,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-YSK",
+        "ai_probability": 0.71,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "JOBLESS-21AUG28-C350",
+        "ai_probability": 0.41,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "NONCOMPETEBAN",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXROMANIATOP-30-GS",
+        "ai_probability": 0.45,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXROMANIATOP-30-CG",
+        "ai_probability": 0.4,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-SAR",
+        "ai_probability": 0.25,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHL",
+        "ai_probability": 0.5,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHLOE",
+        "ai_probability": 0.18,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-AMY",
+        "ai_probability": 0.17,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHI",
+        "ai_probability": 0.18,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXHALFTRIL-28",
+        "ai_probability": 0.85,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-29",
+        "ai_probability": 0.45,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXHALFTRIL-30",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-27",
+        "ai_probability": 0.4,
+        "confidence": 0.75
+      },
+      {
+        "ticker": "KXGERCOALITION-30-GER",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXGERCOALITION-30-JC",
+        "ai_probability": 0.2,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "BTCETHATH-29DEC31",
+        "ai_probability": 0.45,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXTRUMPPARDONS-29JAN21-TPET",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXPENNYCONGRESS-29",
+        "ai_probability": 0.35,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXMTMCK-29",
+        "ai_probability": 0.75,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXEVCREDITS-29",
+        "ai_probability": 0.7,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCABOUT-29-KN",
+        "ai_probability": 0.15,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXCABOUT-29-LCD",
+        "ai_probability": 0.12,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXCABOUT-29-SM",
+        "ai_probability": 0.65,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXUSNY-29",
+        "ai_probability": 0.35,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXUSIL-29",
+        "ai_probability": 0.4,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTJUDE-29",
+        "ai_probability": 0.6,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXDEVASANTRIX",
+        "ai_probability": 0.82,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXCATHOLICWISCNOSIN",
+        "ai_probability": 0.67,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXBECERRABRAIDWOOD",
+        "ai_probability": 0.79,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXBARNESFELIX",
+        "ai_probability": 0.78,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXAJTOSSEO",
+        "ai_probability": 0.7,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXADVOCATEBECERRA",
+        "ai_probability": 0.4,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "GOOGLEUS-28DEC31",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CDP",
+        "ai_probability": 0.17,
+        "confidence": 0.2
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JCP",
+        "ai_probability": 0.02,
+        "confidence": 0.95
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JIP",
+        "ai_probability": 0.15,
+        "confidence": 0.85
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CRA",
+        "ai_probability": 0.05,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "OPENAISUIT",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXPCOIE-28",
+        "ai_probability": 0.6,
+        "confidence": 0.65
+      },
+      {
+        "ticker": "KXIPOFANNIE-26MAR01",
+        "ai_probability": 0.2,
+        "confidence": 0.75
+      },
+      {
+        "ticker": "KXFREDDIE-26MAR01",
+        "ai_probability": 0.15,
+        "confidence": 0.75
+      },
+      {
+        "ticker": "KXFREDDIE-26FEB01",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXAPSUIT-28",
+        "ai_probability": 0.44,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26JAN01",
+        "ai_probability": 0.08,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26MAR01",
+        "ai_probability": 0.12,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26FEB01",
+        "ai_probability": 0.1,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSTARLINK-26MAR01",
+        "ai_probability": 0.45,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSPACEX-26JAN01",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOSPACEX-26FEB01",
+        "ai_probability": 0.3,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-25DEC01",
+        "ai_probability": 0.35,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXIPOOPENAI-25OCT01",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOOPENAI-26JAN01",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26MAR01",
+        "ai_probability": 0.3,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXIPOOPENAI-26FEB01",
+        "ai_probability": 0.5,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXIPOKLARNA-26JAN01",
+        "ai_probability": 0.6,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25DEC01",
+        "ai_probability": 0.55,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-25SEP01",
+        "ai_probability": 0.25,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXIPOKLARNA-25OCT01",
+        "ai_probability": 0.3,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-25NOV01",
+        "ai_probability": 0.45,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPODISCORD-25DEC01",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26JAN01",
+        "ai_probability": 0.3,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26FEB01",
+        "ai_probability": 0.4,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXIPOANDURIL-25DEC01",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26JAN01",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOANDURIL-26FEB01",
+        "ai_probability": 0.24,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXIPOANDURIL-26MAR01",
+        "ai_probability": 0.2,
+        "confidence": 0.6
+      }
+    ],
+    "base_rate": [
+      {
+        "ticker": "KXG7LEADEROUT-36-KS",
+        "ai_probability": 0.18,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXG7LEADEROUT-36-SI",
+        "ai_probability": 0.75,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PPAR",
+        "ai_probability": 0.28,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-RPRE",
+        "ai_probability": 0.36,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PDAV",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-LANT",
+        "ai_probability": 0.26,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-JM",
+        "ai_probability": 0.2,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-NM",
+        "ai_probability": 0.32,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-GB",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-DB",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-JT",
+        "ai_probability": 0.75,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-OS",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-AA",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-YSK",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "JOBLESS-21AUG28-C350",
+        "ai_probability": 0.42,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "NONCOMPETEBAN",
+        "ai_probability": 0.45,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXROMANIATOP-30-GS",
+        "ai_probability": 0.65,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXROMANIATOP-30-CG",
+        "ai_probability": 0.32,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-SAR",
+        "ai_probability": 0.31,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHL",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHLOE",
+        "ai_probability": 0.23,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-AMY",
+        "ai_probability": 0.22,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHI",
+        "ai_probability": 0.23,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXHALFTRIL-28",
+        "ai_probability": 0.58,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXHALFTRIL-29",
+        "ai_probability": 0.58,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-30",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-27",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXGERCOALITION-30-GER",
+        "ai_probability": 0.22,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXGERCOALITION-30-JC",
+        "ai_probability": 0.18,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "BTCETHATH-29DEC31",
+        "ai_probability": 0.38,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXTRUMPPARDONS-29JAN21-TPET",
+        "ai_probability": 0.52,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXPENNYCONGRESS-29",
+        "ai_probability": 0.42,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXMTMCK-29",
+        "ai_probability": 0.58,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXEVCREDITS-29",
+        "ai_probability": 0.72,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXCABOUT-29-KN",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCABOUT-29-LCD",
+        "ai_probability": 0.18,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCABOUT-29-SM",
+        "ai_probability": 0.68,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXUSNY-29",
+        "ai_probability": 0.32,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXUSIL-29",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTJUDE-29",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXDEVASANTRIX",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCATHOLICWISCNOSIN",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXBECERRABRAIDWOOD",
+        "ai_probability": 0.7,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXBARNESFELIX",
+        "ai_probability": 0.68,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXAJTOSSEO",
+        "ai_probability": 0.62,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXADVOCATEBECERRA",
+        "ai_probability": 0.48,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "GOOGLEUS-28DEC31",
+        "ai_probability": 0.58,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CDP",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JCP",
+        "ai_probability": 0.05,
+        "confidence": 0.9
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JIP",
+        "ai_probability": 0.15,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CRA",
+        "ai_probability": 0.12,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "OPENAISUIT",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXPCOIE-28",
+        "ai_probability": 0.6,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXIPOFANNIE-26MAR01",
+        "ai_probability": 0.4,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXFREDDIE-26MAR01",
+        "ai_probability": 0.35,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXFREDDIE-26FEB01",
+        "ai_probability": 0.45,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXAPSUIT-28",
+        "ai_probability": 0.35,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26JAN01",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26MAR01",
+        "ai_probability": 0.26,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26FEB01",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOSTARLINK-26MAR01",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSPACEX-26JAN01",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOSPACEX-26FEB01",
+        "ai_probability": 0.38,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOOPENAI-25DEC01",
+        "ai_probability": 0.45,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-25OCT01",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOOPENAI-26JAN01",
+        "ai_probability": 0.28,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOOPENAI-26MAR01",
+        "ai_probability": 0.35,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOOPENAI-26FEB01",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-26JAN01",
+        "ai_probability": 0.55,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25DEC01",
+        "ai_probability": 0.52,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25SEP01",
+        "ai_probability": 0.22,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXIPOKLARNA-25OCT01",
+        "ai_probability": 0.32,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-25NOV01",
+        "ai_probability": 0.55,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPODISCORD-25DEC01",
+        "ai_probability": 0.38,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26JAN01",
+        "ai_probability": 0.4,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26FEB01",
+        "ai_probability": 0.43,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOANDURIL-25DEC01",
+        "ai_probability": 0.22,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26JAN01",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26FEB01",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26MAR01",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      }
+    ],
+    "mean_reversion": [
+      {
+        "ticker": "KXG7LEADEROUT-36-KS",
+        "ai_probability": 0.12,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXG7LEADEROUT-36-SI",
+        "ai_probability": 0.75,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PPAR",
+        "ai_probability": 0.25,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-RPRE",
+        "ai_probability": 0.39,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-PDAV",
+        "ai_probability": 0.18,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEXTPOPE-35-LANT",
+        "ai_probability": 0.24,
+        "confidence": 0.3
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-JM",
+        "ai_probability": 0.14,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-NM",
+        "ai_probability": 0.28,
+        "confidence": 0.4
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-GB",
+        "ai_probability": 0.68,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXLALEADEROUT-35-DB",
+        "ai_probability": 0.58,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-JT",
+        "ai_probability": 0.78,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXG7LEADEROUT-35-OS",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-AA",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXASIALEADEROUT-35-YSK",
+        "ai_probability": 0.71,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "JOBLESS-21AUG28-C350",
+        "ai_probability": 0.41,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "NONCOMPETEBAN",
+        "ai_probability": 0.4,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXROMANIATOP-30-GS",
+        "ai_probability": 0.82,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXROMANIATOP-30-CG",
+        "ai_probability": 0.25,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-SAR",
+        "ai_probability": 0.27,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHL",
+        "ai_probability": 0.62,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHLOE",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-AMY",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXNEWROLEVOGUE-30JAN-CHI",
+        "ai_probability": 0.22,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-28",
+        "ai_probability": 0.68,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-29",
+        "ai_probability": 0.62,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-30",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXHALFTRIL-27",
+        "ai_probability": 0.67,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXGERCOALITION-30-GER",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXGERCOALITION-30-JC",
+        "ai_probability": 0.22,
+        "confidence": 0.8
+      },
+      {
+        "ticker": "BTCETHATH-29DEC31",
+        "ai_probability": 0.36,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXTRUMPPARDONS-29JAN21-TPET",
+        "ai_probability": 0.6,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXPENNYCONGRESS-29",
+        "ai_probability": 0.48,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXMTMCK-29",
+        "ai_probability": 0.62,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXEVCREDITS-29",
+        "ai_probability": 0.75,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXCABOUT-29-KN",
+        "ai_probability": 0.18,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCABOUT-29-LCD",
+        "ai_probability": 0.08,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXCABOUT-29-SM",
+        "ai_probability": 0.75,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXUSNY-29",
+        "ai_probability": 0.28,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXUSIL-29",
+        "ai_probability": 0.34,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTJUDE-29",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXDEVASANTRIX",
+        "ai_probability": 0.82,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXCATHOLICWISCNOSIN",
+        "ai_probability": 0.67,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXBECERRABRAIDWOOD",
+        "ai_probability": 0.79,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXBARNESFELIX",
+        "ai_probability": 0.78,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXAJTOSSEO",
+        "ai_probability": 0.7,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "KXADVOCATEBECERRA",
+        "ai_probability": 0.4,
+        "confidence": 0.5
+      },
+      {
+        "ticker": "GOOGLEUS-28DEC31",
+        "ai_probability": 0.62,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CDP",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JCP",
+        "ai_probability": 0.02,
+        "confidence": 0.95
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-JIP",
+        "ai_probability": 0.75,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXJAPANHOUSE-28-CRA",
+        "ai_probability": 0.05,
+        "confidence": 0.85
+      },
+      {
+        "ticker": "OPENAISUIT",
+        "ai_probability": 0.1,
+        "confidence": 0.75
+      },
+      {
+        "ticker": "KXPCOIE-28",
+        "ai_probability": 0.85,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOFANNIE-26MAR01",
+        "ai_probability": 0.35,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXFREDDIE-26MAR01",
+        "ai_probability": 0.25,
+        "confidence": 0.65
+      },
+      {
+        "ticker": "KXFREDDIE-26FEB01",
+        "ai_probability": 0.5,
+        "confidence": 0.55
+      },
+      {
+        "ticker": "KXAPSUIT-28",
+        "ai_probability": 0.44,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26JAN01",
+        "ai_probability": 0.12,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26MAR01",
+        "ai_probability": 0.14,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXSTRIPEIPO-26FEB01",
+        "ai_probability": 0.13,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOSTARLINK-26MAR01",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSPACEX-26JAN01",
+        "ai_probability": 0.58,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOSPACEX-26FEB01",
+        "ai_probability": 0.44,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-25DEC01",
+        "ai_probability": 0.65,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-25OCT01",
+        "ai_probability": 0.43,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26JAN01",
+        "ai_probability": 0.34,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26MAR01",
+        "ai_probability": 0.44,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOOPENAI-26FEB01",
+        "ai_probability": 0.73,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-26JAN01",
+        "ai_probability": 0.77,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25DEC01",
+        "ai_probability": 0.75,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25SEP01",
+        "ai_probability": 0.25,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOKLARNA-25OCT01",
+        "ai_probability": 0.44,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOKLARNA-25NOV01",
+        "ai_probability": 0.64,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-25DEC01",
+        "ai_probability": 0.35,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26JAN01",
+        "ai_probability": 0.35,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPODISCORD-26FEB01",
+        "ai_probability": 0.45,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOANDURIL-25DEC01",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      },
+      {
+        "ticker": "KXIPOANDURIL-26JAN01",
+        "ai_probability": 0.26,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOANDURIL-26FEB01",
+        "ai_probability": 0.26,
+        "confidence": 0.6
+      },
+      {
+        "ticker": "KXIPOANDURIL-26MAR01",
+        "ai_probability": 0.15,
+        "confidence": 0.7
+      }
+    ]
+  },
+  "ensemble_predictions": [
+    {
+      "ticker": "KXG7LEADEROUT-36-KS",
+      "ai_probability": 0.1398
+    },
+    {
+      "ticker": "KXG7LEADEROUT-36-SI",
+      "ai_probability": 0.7342
+    },
+    {
+      "ticker": "KXNEXTPOPE-35-PPAR",
+      "ai_probability": 0.2494
+    },
+    {
+      "ticker": "KXNEXTPOPE-35-RPRE",
+      "ai_probability": 0.3595
+    },
+    {
+      "ticker": "KXNEXTPOPE-35-PDAV",
+      "ai_probability": 0.1931
+    },
+    {
+      "ticker": "KXNEXTPOPE-35-LANT",
+      "ai_probability": 0.2362
+    },
+    {
+      "ticker": "KXLALEADEROUT-35-JM",
+      "ai_probability": 0.1745
+    },
+    {
+      "ticker": "KXLALEADEROUT-35-NM",
+      "ai_probability": 0.3209
+    },
+    {
+      "ticker": "KXLALEADEROUT-35-GB",
+      "ai_probability": 0.6583
+    },
+    {
+      "ticker": "KXLALEADEROUT-35-DB",
+      "ai_probability": 0.5916
+    },
+    {
+      "ticker": "KXG7LEADEROUT-35-JT",
+      "ai_probability": 0.7855
+    },
+    {
+      "ticker": "KXG7LEADEROUT-35-OS",
+      "ai_probability": 0.2624
+    },
+    {
+      "ticker": "KXASIALEADEROUT-35-AA",
+      "ai_probability": 0.216
+    },
+    {
+      "ticker": "KXASIALEADEROUT-35-YSK",
+      "ai_probability": 0.7058
+    },
+    {
+      "ticker": "JOBLESS-21AUG28-C350",
+      "ai_probability": 0.4126
+    },
+    {
+      "ticker": "NONCOMPETEBAN",
+      "ai_probability": 0.4486
+    },
+    {
+      "ticker": "KXROMANIATOP-30-GS",
+      "ai_probability": 0.6675
+    },
+    {
+      "ticker": "KXROMANIATOP-30-CG",
+      "ai_probability": 0.3175
+    },
+    {
+      "ticker": "KXNEWROLEVOGUE-30JAN-SAR",
+      "ai_probability": 0.2771
+    },
+    {
+      "ticker": "KXNEWROLEVOGUE-30JAN-CHL",
+      "ai_probability": 0.5802
+    },
+    {
+      "ticker": "KXNEWROLEVOGUE-30JAN-CHLOE",
+      "ai_probability": 0.2007
+    },
+    {
+      "ticker": "KXNEWROLEVOGUE-30JAN-AMY",
+      "ai_probability": 0.1785
+    },
+    {
+      "ticker": "KXNEWROLEVOGUE-30JAN-CHI",
+      "ai_probability": 0.2007
+    },
+    {
+      "ticker": "KXHALFTRIL-28",
+      "ai_probability": 0.6989
+    },
+    {
+      "ticker": "KXHALFTRIL-29",
+      "ai_probability": 0.5664
+    },
+    {
+      "ticker": "KXHALFTRIL-30",
+      "ai_probability": 0.6832
+    },
+    {
+      "ticker": "KXHALFTRIL-27",
+      "ai_probability": 0.5695
+    },
+    {
+      "ticker": "KXGERCOALITION-30-GER",
+      "ai_probability": 0.2217
+    },
+    {
+      "ticker": "KXGERCOALITION-30-JC",
+      "ai_probability": 0.1818
+    },
+    {
+      "ticker": "BTCETHATH-29DEC31",
+      "ai_probability": 0.391
+    },
+    {
+      "ticker": "KXTRUMPPARDONS-29JAN21-TPET",
+      "ai_probability": 0.5163
+    },
+    {
+      "ticker": "KXPENNYCONGRESS-29",
+      "ai_probability": 0.4254
+    },
+    {
+      "ticker": "KXMTMCK-29",
+      "ai_probability": 0.6486
+    },
+    {
+      "ticker": "KXEVCREDITS-29",
+      "ai_probability": 0.764
+    },
+    {
+      "ticker": "KXCABOUT-29-KN",
+      "ai_probability": 0.1988
+    },
+    {
+      "ticker": "KXCABOUT-29-LCD",
+      "ai_probability": 0.145
+    },
+    {
+      "ticker": "KXCABOUT-29-SM",
+      "ai_probability": 0.4301
+    },
+    {
+      "ticker": "KXUSNY-29",
+      "ai_probability": 0.3123
+    },
+    {
+      "ticker": "KXUSIL-29",
+      "ai_probability": 0.3466
+    },
+    {
+      "ticker": "KXSTJUDE-29",
+      "ai_probability": 0.6881
+    },
+    {
+      "ticker": "KXDEVASANTRIX",
+      "ai_probability": 0.7906
+    },
+    {
+      "ticker": "KXCATHOLICWISCNOSIN",
+      "ai_probability": 0.6546
+    },
+    {
+      "ticker": "KXBECERRABRAIDWOOD",
+      "ai_probability": 0.7502
+    },
+    {
+      "ticker": "KXBARNESFELIX",
+      "ai_probability": 0.7402
+    },
+    {
+      "ticker": "KXAJTOSSEO",
+      "ai_probability": 0.6692
+    },
+    {
+      "ticker": "KXADVOCATEBECERRA",
+      "ai_probability": 0.4333
+    },
+    {
+      "ticker": "GOOGLEUS-28DEC31",
+      "ai_probability": 0.6161
+    },
+    {
+      "ticker": "KXJAPANHOUSE-28-CDP",
+      "ai_probability": 0.2062
+    },
+    {
+      "ticker": "KXJAPANHOUSE-28-JCP",
+      "ai_probability": 0.0391
+    },
+    {
+      "ticker": "KXJAPANHOUSE-28-JIP",
+      "ai_probability": 0.2273
+    },
+    {
+      "ticker": "KXJAPANHOUSE-28-CRA",
+      "ai_probability": 0.0929
+    },
+    {
+      "ticker": "OPENAISUIT",
+      "ai_probability": 0.2125
+    },
+    {
+      "ticker": "KXPCOIE-28",
+      "ai_probability": 0.6963
+    },
+    {
+      "ticker": "KXIPOFANNIE-26MAR01",
+      "ai_probability": 0.2991
+    },
+    {
+      "ticker": "KXFREDDIE-26MAR01",
+      "ai_probability": 0.2292
+    },
+    {
+      "ticker": "KXFREDDIE-26FEB01",
+      "ai_probability": 0.4426
+    },
+    {
+      "ticker": "KXAPSUIT-28",
+      "ai_probability": 0.4061
+    },
+    {
+      "ticker": "KXSTRIPEIPO-26JAN01",
+      "ai_probability": 0.1565
+    },
+    {
+      "ticker": "KXSTRIPEIPO-26MAR01",
+      "ai_probability": 0.1879
+    },
+    {
+      "ticker": "KXSTRIPEIPO-26FEB01",
+      "ai_probability": 0.1721
+    },
+    {
+      "ticker": "KXIPOSTARLINK-26MAR01",
+      "ai_probability": 0.62
+    },
+    {
+      "ticker": "KXIPOSPACEX-26JAN01",
+      "ai_probability": 0.4565
+    },
+    {
+      "ticker": "KXIPOSPACEX-26FEB01",
+      "ai_probability": 0.404
+    },
+    {
+      "ticker": "KXIPOOPENAI-25DEC01",
+      "ai_probability": 0.5169
+    },
+    {
+      "ticker": "KXIPOOPENAI-25OCT01",
+      "ai_probability": 0.3092
+    },
+    {
+      "ticker": "KXIPOOPENAI-26JAN01",
+      "ai_probability": 0.3136
+    },
+    {
+      "ticker": "KXIPOOPENAI-26MAR01",
+      "ai_probability": 0.3829
+    },
+    {
+      "ticker": "KXIPOOPENAI-26FEB01",
+      "ai_probability": 0.6403
+    },
+    {
+      "ticker": "KXIPOKLARNA-26JAN01",
+      "ai_probability": 0.6778
+    },
+    {
+      "ticker": "KXIPOKLARNA-25DEC01",
+      "ai_probability": 0.6426
+    },
+    {
+      "ticker": "KXIPOKLARNA-25SEP01",
+      "ai_probability": 0.222
+    },
+    {
+      "ticker": "KXIPOKLARNA-25OCT01",
+      "ai_probability": 0.3845
+    },
+    {
+      "ticker": "KXIPOKLARNA-25NOV01",
+      "ai_probability": 0.5618
+    },
+    {
+      "ticker": "KXIPODISCORD-25DEC01",
+      "ai_probability": 0.3255
+    },
+    {
+      "ticker": "KXIPODISCORD-26JAN01",
+      "ai_probability": 0.3445
+    },
+    {
+      "ticker": "KXIPODISCORD-26FEB01",
+      "ai_probability": 0.4238
+    },
+    {
+      "ticker": "KXIPOANDURIL-25DEC01",
+      "ai_probability": 0.1755
+    },
+    {
+      "ticker": "KXIPOANDURIL-26JAN01",
+      "ai_probability": 0.2417
+    },
+    {
+      "ticker": "KXIPOANDURIL-26FEB01",
+      "ai_probability": 0.2455
+    },
+    {
+      "ticker": "KXIPOANDURIL-26MAR01",
+      "ai_probability": 0.1807
+    }
+  ]
+}
