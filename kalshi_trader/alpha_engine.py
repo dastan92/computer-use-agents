@@ -52,8 +52,8 @@ EDGE_CATEGORIES = {
 
 # --- Portfolio constraints ---
 MAX_POSITIONS = 15
-MAX_CLUSTER_PCT = 0.10  # max 10% of portfolio per correlation cluster
-MAX_SINGLE_PCT = 0.08   # max 8% per single trade
+MAX_CLUSTER_PCT = 0.15  # max 15% of portfolio per correlation cluster
+MAX_SINGLE_PCT = 0.12   # max 12% per single trade
 PORTFOLIO_SIZE = 2000    # demo portfolio
 
 # --- Ensemble prompts ---
@@ -62,14 +62,15 @@ You are an elite prediction market analyst. For each market, estimate P(YES).
 
 USE THE MARKET PRICE as a Bayesian prior. The market aggregates many informed
 participants. Only disagree when you have SPECIFIC information the market may be
-mispricing. Your estimate should be CLOSE to the market price (within ±10%)
-unless you have strong evidence.
+mispricing. If you identify a clear mispricing, deviate boldly — don't limit
+yourself to small disagreements.
 
 RULES:
 - Multi-choice: base rate = 1/N candidates, use market for adjustment
 - Deadlines: most things don't happen on schedule, discount accordingly
 - Binary: status quo usually persists
 - Calibration: Would about X out of 100 similar situations resolve YES?
+- Confidence: rate 0.5 (unsure) to 0.95 (very confident). Be honest.
 
 JSON array only: [{"ticker": "...", "ai_probability": 0.X, "confidence": 0.X, "reasoning": "..."}]
 """
@@ -230,13 +231,17 @@ def spread_confidence_factor(yes_bid: int, yes_ask: int) -> float:
 
 
 def calculate_kelly_fraction(edge: float, confidence: float) -> float:
-    """Calculate quarter-Kelly bet fraction with confidence scaling."""
-    if edge <= 0 or confidence < 0.45:
+    """Calculate quarter-Kelly bet fraction.
+
+    Kelly formula: f* = edge / odds. Quarter-Kelly for safety.
+    Confidence is used only for trade filtering, NOT in the Kelly calc —
+    multiplying edge by confidence double-discounts uncertainty.
+    """
+    if edge <= 0 or confidence < 0.50:
         return 0.0
 
-    # Edge * confidence as effective edge, quarter-Kelly
-    effective_edge = abs(edge) * confidence
-    kelly = effective_edge * 0.25
+    # Pure quarter-Kelly on edge
+    kelly = abs(edge) * 0.25
 
     # Cap per-trade at MAX_SINGLE_PCT
     return min(kelly, MAX_SINGLE_PCT)
@@ -245,37 +250,27 @@ def calculate_kelly_fraction(edge: float, confidence: float) -> float:
 def score_opportunity(pred: dict, cat_config: dict) -> float:
     """Score a trading opportunity from 0-100.
 
-    Combines edge, confidence, agreement, category, volume, time decay, spread.
+    Pure edge-driven scoring. Edge is the primary signal.
+    Agreement acts as a quality filter. Volume adds liquidity preference.
     """
     edge = abs(pred.get("edge", 0))
-    confidence = pred.get("confidence", 0.5)
     agreement = pred.get("agreement", 0.5)
     volume = pred.get("volume", 0)
-    q_type = pred.get("question_type", "binary")
     days = pred.get("days_to_close", 365)
 
-    # Base: edge * confidence * agreement
-    base_score = edge * confidence * (0.5 + 0.5 * agreement) * 100
+    # Base: edge * agreement (edge is the alpha, agreement is the conviction)
+    base_score = edge * agreement * 100
 
     # Category multiplier
     base_score *= cat_config.get("weight", 1.0)
 
-    # Question type bonus
-    type_mult = {"multi_choice": 1.3, "deadline": 1.0, "threshold": 1.1, "binary": 1.0}
-    base_score *= type_mult.get(q_type, 1.0)
-
-    # Volume factor (log scale)
+    # Volume factor (log scale) — prefer liquid markets
     if volume > 0:
         vol_factor = min(math.log10(volume) / 5, 1.5)
         base_score *= (0.7 + 0.3 * vol_factor)
 
-    # Time decay: prefer sooner-closing markets
+    # Gentle time preference
     base_score *= time_decay_multiplier(days)
-
-    # Spread bonus: wide spreads = more mispricing opportunity
-    spread_factor = pred.get("spread_factor", 0.9)
-    if spread_factor < 0.85:
-        base_score *= 1.15  # bonus for wide-spread markets
 
     return min(base_score, 100.0)
 
@@ -291,12 +286,14 @@ class AlphaEngine:
     """
 
     # Primary strategies for probability estimation
+    # Bayesian: $1.31/trade in backtest (highest). Contrarian: $0.69/trade (most trades).
     PROB_STRATEGIES = [
-        {"name": "bayesian", "prompt": PROMPT_BAYESIAN, "weight": 0.65},
-        {"name": "contrarian", "prompt": PROMPT_CONTRARIAN, "weight": 0.35},
+        {"name": "bayesian", "prompt": PROMPT_BAYESIAN, "weight": 0.75},
+        {"name": "contrarian", "prompt": PROMPT_CONTRARIAN, "weight": 0.25},
     ]
 
-    # Filter strategies for trade selection (not used in prob calculation)
+    # Filter strategies for directional agreement (not used in prob calculation)
+    # mean_reversion: 62% WR (best). base_rate: 89% accuracy (good filter, bad trader).
     FILTER_STRATEGIES = [
         {"name": "base_rate", "prompt": PROMPT_BASE_RATE},
         {"name": "mean_reversion", "prompt": PROMPT_MEAN_REVERSION},
@@ -542,20 +539,17 @@ class AlphaEngine:
             pred["agreement"] = directional_agreement  # for score_opportunity
             pred["score"] = round(score_opportunity(pred, cat_config), 2)
 
-            # TRADE FILTER: Only trade when 3+ strategies agree on direction
+            # TRADE FILTER: Only trade with strong agreement and confidence
             min_edge = cat_config.get("min_edge", 0.05)
             trade_eligible = (
                 abs(edge) >= min_edge
-                and directional_agreement >= 0.5  # at least half agree
-                and final_confidence >= 0.40
+                and directional_agreement >= 0.75  # 3 of 4 strategies agree
+                and final_confidence >= 0.50
             )
 
             if trade_eligible:
                 kelly = calculate_kelly_fraction(abs(edge), final_confidence)
-                # Boost kelly if strong agreement
-                if directional_agreement >= 0.75:
-                    kelly *= 1.3
-                kelly = min(kelly, MAX_SINGLE_PCT)
+                # Kelly is already optimal — no multipliers
                 pred["kelly_fraction"] = round(kelly, 4)
                 pred["suggested_size"] = round(PORTFOLIO_SIZE * kelly, 2)
                 pred["side"] = "YES" if edge > 0 else "NO"
@@ -623,8 +617,8 @@ class AlphaEngine:
             # Adjust size for cluster limit
             actual_size = min(suggested, remaining_cluster)
 
-            # Check total portfolio utilization (cap at 60%)
-            max_total = PORTFOLIO_SIZE * 0.60
+            # Check total portfolio utilization (cap at 75%)
+            max_total = PORTFOLIO_SIZE * 0.75
             remaining_total = max_total - total_allocation
             if remaining_total <= 0:
                 pred["in_portfolio"] = False

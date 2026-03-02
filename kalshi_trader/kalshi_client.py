@@ -50,18 +50,20 @@ class KalshiClient:
                 "Private key not loaded. Set KALSHI_PRIVATE_KEY_PATH in .env"
             )
 
-        message = f"{timestamp_ms}{method}{path}".encode()
+        # Strip query params from path before signing
+        path_without_query = path.split('?')[0]
+        message = f"{timestamp_ms}{method}{path_without_query}".encode('utf-8')
         signature = self._private_key.sign(
             message,
             padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH,
+                salt_length=padding.PSS.DIGEST_LENGTH,
             ),
-            utils.Prehashed(hashes.SHA256()),
+            hashes.SHA256(),
         )
         import base64
 
-        return base64.b64encode(signature).decode()
+        return base64.b64encode(signature).decode('utf-8')
 
     def _get_headers(self, method: str, path: str) -> dict:
         """Build authenticated request headers."""
@@ -70,7 +72,9 @@ class KalshiClient:
         headers = {"Content-Type": "application/json"}
 
         if self._private_key and self.config.api_key_id:
-            signature = self._sign_request(method, path, timestamp_ms)
+            # Sign with full API path, not just the relative path
+            full_path = f"/trade-api/v2{path}"
+            signature = self._sign_request(method, full_path, timestamp_ms)
             headers.update(
                 {
                     "KALSHI-ACCESS-KEY": self.config.api_key_id,

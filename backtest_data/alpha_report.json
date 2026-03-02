@@ -1,193 +1,201 @@
 {
   "version": "v2",
-  "timestamp": "2026-03-02T23:38:53.448100+00:00",
+  "timestamp": "2026-03-02T23:51:44.499615+00:00",
   "total_markets_analyzed": 30,
-  "tradeable_signals": 16,
-  "portfolio_positions": 13,
-  "total_allocation": 696.72,
-  "portfolio_utilization": 0.348,
-  "max_single_position": 160.0,
-  "n_clusters": 12,
+  "tradeable_signals": 19,
+  "portfolio_positions": 15,
+  "total_allocation": 886.89,
+  "portfolio_utilization": 0.443,
+  "max_single_position": 198.11,
+  "n_clusters": 13,
   "yes_signals": 3,
-  "no_signals": 10,
-  "avg_confidence": 0.834,
-  "avg_edge": 0.1086,
-  "avg_agreement": 0.865,
-  "avg_days_to_close": 1138.0,
+  "no_signals": 12,
+  "avg_confidence": 0.837,
+  "avg_edge": 0.1221,
+  "avg_agreement": 0.9,
+  "avg_days_to_close": 1100.0,
   "by_category": {
     "Economics": {
       "total": 6,
-      "tradeable": 5,
-      "in_portfolio": 2,
-      "total_size": 200.0,
-      "avg_edge": 0.1411,
+      "tradeable": 6,
+      "in_portfolio": 3,
+      "total_size": 327.5,
+      "avg_edge": 0.2035,
+      "avg_agreement": 1.0
+    },
+    "Politics": {
+      "total": 9,
+      "tradeable": 7,
+      "in_portfolio": 6,
+      "total_size": 203.19,
+      "avg_edge": 0.0623,
+      "avg_agreement": 0.833
+    },
+    "Elections": {
+      "total": 2,
+      "tradeable": 1,
+      "in_portfolio": 1,
+      "total_size": 51.91,
+      "avg_edge": 0.1038,
       "avg_agreement": 1.0
     },
     "Entertainment": {
       "total": 8,
       "tradeable": 3,
       "in_portfolio": 3,
-      "total_size": 259.65999999999997,
-      "avg_edge": 0.1916,
-      "avg_agreement": 1.0
+      "total_size": 166.79,
+      "avg_edge": 0.1112,
+      "avg_agreement": 0.917
     },
-    "Politics": {
-      "total": 9,
-      "tradeable": 6,
-      "in_portfolio": 6,
-      "total_size": 141.19,
-      "avg_edge": 0.045,
-      "avg_agreement": 0.75
+    "Companies": {
+      "total": 2,
+      "tradeable": 1,
+      "in_portfolio": 1,
+      "total_size": 42.5,
+      "avg_edge": 0.085,
+      "avg_agreement": 1.0
     },
     "Science and Technology": {
       "total": 3,
       "tradeable": 1,
       "in_portfolio": 1,
-      "total_size": 67.56,
-      "avg_edge": 0.1287,
-      "avg_agreement": 1.0
-    },
-    "Elections": {
-      "total": 2,
-      "tradeable": 1,
-      "in_portfolio": 1,
-      "total_size": 28.31,
-      "avg_edge": 0.0605,
+      "total_size": 95.0,
+      "avg_edge": 0.19,
       "avg_agreement": 0.75
-    },
-    "Companies": {
-      "total": 2,
-      "tradeable": 0,
-      "in_portfolio": 0,
-      "total_size": 0,
-      "avg_edge": 0,
-      "avg_agreement": 0
     }
   },
   "by_cluster": {
     "TRILLIONAIRE_CLUSTER": {
       "count": 2,
-      "total_size": 200.0,
+      "total_size": 300.0,
       "tickers": [
         "KXMUSKTRILLION-28",
         "KXMUSKTRILLION-27"
       ]
     },
-    "KXSWIFTKELCEWEDDINGLOCATION-30": {
+    "KXTAIWANLVL4-26JUL01": {
       "count": 1,
-      "total_size": 160.0,
+      "total_size": 30.38,
       "tickers": [
-        "KXSWIFTKELCEWEDDINGLOCATION-30-RHO"
-      ]
-    },
-    "KXALBERTAREFYES": {
-      "count": 1,
-      "total_size": 36.12,
-      "tickers": [
-        "KXALBERTAREFYES-29"
-      ]
-    },
-    "UK_PM_CLUSTER": {
-      "count": 1,
-      "total_size": 31.15,
-      "tickers": [
-        "KXNEXTUKPM-30-AR"
-      ]
-    },
-    "KXBOND-30": {
-      "count": 1,
-      "total_size": 48.6,
-      "tickers": [
-        "KXBOND-30-CAL"
-      ]
-    },
-    "POWER-28-DH-DS": {
-      "count": 1,
-      "total_size": 33.96,
-      "tickers": [
-        "POWER-28-DH-DS-DP"
-      ]
-    },
-    "KXGTAPRICE": {
-      "count": 1,
-      "total_size": 51.06,
-      "tickers": [
-        "KXGTAPRICE-80"
-      ]
-    },
-    "KXBLUESPACEX": {
-      "count": 1,
-      "total_size": 67.56,
-      "tickers": [
-        "KXBLUESPACEX-30"
+        "KXTAIWANLVL4-26JUL01"
       ]
     },
     "UK_ELECTION_CLUSTER": {
       "count": 1,
-      "total_size": 28.31,
+      "total_size": 51.91,
       "tickers": [
         "KXUKPARTY-29-R"
       ]
     },
     "KXTAIWANLVL4-27JAN01": {
       "count": 1,
-      "total_size": 13.05,
+      "total_size": 37.69,
       "tickers": [
         "KXTAIWANLVL4-27JAN01"
       ]
     },
-    "KXBALANCE": {
-      "count": 1,
-      "total_size": 18.83,
+    "KXBOND-30": {
+      "count": 2,
+      "total_size": 120.0,
       "tickers": [
-        "KXBALANCE-29"
+        "KXBOND-30-CAL",
+        "KXBOND-30-JACO"
+      ]
+    },
+    "POWER-28-DH-DS": {
+      "count": 1,
+      "total_size": 34.25,
+      "tickers": [
+        "POWER-28-DH-DS-DP"
+      ]
+    },
+    "KXALBERTAREFYES": {
+      "count": 1,
+      "total_size": 43.11,
+      "tickers": [
+        "KXALBERTAREFYES-29"
+      ]
+    },
+    "APPLEUS-29DEC31": {
+      "count": 1,
+      "total_size": 42.5,
+      "tickers": [
+        "APPLEUS-29DEC31"
+      ]
+    },
+    "KXBLUESPACEX": {
+      "count": 1,
+      "total_size": 95.0,
+      "tickers": [
+        "KXBLUESPACEX-30"
       ]
     },
     "POWER-28-RH-RS": {
       "count": 1,
-      "total_size": 8.08,
+      "total_size": 37.5,
       "tickers": [
         "POWER-28-RH-RS-RP"
+      ]
+    },
+    "KXSWIFTKELCEWEDDINGLOCATION-30": {
+      "count": 1,
+      "total_size": 46.79,
+      "tickers": [
+        "KXSWIFTKELCEWEDDINGLOCATION-30-RHO"
+      ]
+    },
+    "CHINAUSGDP": {
+      "count": 1,
+      "total_size": 27.5,
+      "tickers": [
+        "CHINAUSGDP-30"
+      ]
+    },
+    "UK_PM_CLUSTER": {
+      "count": 1,
+      "total_size": 20.26,
+      "tickers": [
+        "KXNEXTUKPM-30-NF"
       ]
     }
   },
   "by_question_type": {
     "deadline": {
-      "count": 6,
-      "avg_score": 11.5,
-      "avg_edge": 0.13
-    },
-    "binary": {
-      "count": 5,
-      "avg_score": 6.2,
-      "avg_edge": 0.1189
+      "count": 8,
+      "avg_score": 17.8,
+      "avg_edge": 0.1787
     },
     "multi_choice": {
-      "count": 5,
-      "avg_score": 6.6,
-      "avg_edge": 0.073
+      "count": 7,
+      "avg_score": 6.3,
+      "avg_edge": 0.0883
+    },
+    "binary": {
+      "count": 4,
+      "avg_score": 5.9,
+      "avg_edge": 0.0805
     }
   },
   "strategy_stats": {
     "bayesian": {
       "count": 30,
-      "avg_prob": 0.359,
-      "std_prob": 0.252
+      "avg_prob": 0.333,
+      "std_prob": 0.239
     },
     "contrarian": {
       "count": 30,
-      "avg_prob": 0.305,
+      "avg_prob": 0.294,
       "std_prob": 0.204
     },
     "base_rate": {
       "count": 30,
-      "avg_prob": 0.315,
-      "std_prob": 0.208
+      "avg_prob": 0.329,
+      "std_prob": 0.193
     },
     "mean_reversion": {
       "count": 30,
-      "avg_prob": 0.392,
-      "std_prob": 0.212
+      "avg_prob": 0.38,
+      "std_prob": 0.215
     }
   },
   "top_trades": [
@@ -195,12 +203,12 @@
       "ticker": "KXMUSKTRILLION-28",
       "title": "Will Elon Musk be a trillionaire before 2028?",
       "side": "NO",
-      "edge": -0.21,
+      "edge": -0.3962,
       "confidence": 0.95,
       "directional_agreement": 1.0,
       "mr_agrees": true,
-      "score": 22.87,
-      "portfolio_size": 129.67,
+      "score": 45.42,
+      "portfolio_size": 198.11,
       "category": "Economics",
       "cluster": "TRILLIONAIRE_CLUSTER",
       "days_to_close": 669.6
@@ -209,68 +217,68 @@
       "ticker": "KXMUSKTRILLION-27",
       "title": "Will Elon Musk be a trillionaire before 2027?",
       "side": "NO",
-      "edge": -0.1679,
+      "edge": -0.2612,
       "confidence": 0.95,
       "directional_agreement": 1.0,
       "mr_agrees": true,
-      "score": 21.04,
-      "portfolio_size": 70.33,
+      "score": 34.46,
+      "portfolio_size": 101.89,
       "category": "Economics",
       "cluster": "TRILLIONAIRE_CLUSTER",
       "days_to_close": 304.6
     },
     {
-      "ticker": "KXSWIFTKELCEWEDDINGLOCATION-30-RHO",
-      "title": "Where will Taylor Swift and Travis Kelce\u2019s Wedding occur?",
-      "side": "NO",
-      "edge": -0.3937,
-      "confidence": 0.8073,
+      "ticker": "KXTAIWANLVL4-26JUL01",
+      "title": "Will the U.S. State Department issue a Level 4 warning for Taiwan before Jul 1, 2026?",
+      "side": "YES",
+      "edge": 0.0608,
+      "confidence": 0.828,
       "directional_agreement": 1.0,
       "mr_agrees": true,
-      "score": 17.51,
-      "portfolio_size": 160.0,
-      "category": "Entertainment",
-      "cluster": "KXSWIFTKELCEWEDDINGLOCATION-30",
-      "days_to_close": 1400.2
+      "score": 8.82,
+      "portfolio_size": 30.38,
+      "category": "Politics",
+      "cluster": "KXTAIWANLVL4-26JUL01",
+      "days_to_close": 120.2
     },
     {
-      "ticker": "KXALBERTAREFYES-29",
-      "title": "Will Alberta vote to secede from Canada before the next general election?",
+      "ticker": "KXUKPARTY-29-R",
+      "title": "Will Reform win the next U.K. election?",
       "side": "NO",
-      "edge": -0.0585,
-      "confidence": 0.95,
+      "edge": -0.1038,
+      "confidence": 0.9315,
+      "directional_agreement": 1.0,
+      "mr_agrees": true,
+      "score": 8.51,
+      "portfolio_size": 51.91,
+      "category": "Elections",
+      "cluster": "UK_ELECTION_CLUSTER",
+      "days_to_close": 1277.6
+    },
+    {
+      "ticker": "KXTAIWANLVL4-27JAN01",
+      "title": "Will the U.S. State Department issue a Level 4 warning for Taiwan before Jan 1, 2027?",
+      "side": "YES",
+      "edge": 0.0754,
+      "confidence": 0.84,
       "directional_agreement": 0.75,
       "mr_agrees": false,
-      "score": 6.49,
-      "portfolio_size": 36.12,
+      "score": 8.43,
+      "portfolio_size": 37.69,
       "category": "Politics",
-      "cluster": "KXALBERTAREFYES",
-      "days_to_close": 1322.6
-    },
-    {
-      "ticker": "KXNEXTUKPM-30-AR",
-      "title": "Will Angela Rayner be the next Prime Minister of United Kingdom?",
-      "side": "NO",
-      "edge": -0.0534,
-      "confidence": 0.897,
-      "directional_agreement": 1.0,
-      "mr_agrees": true,
-      "score": 6.38,
-      "portfolio_size": 31.15,
-      "category": "Politics",
-      "cluster": "UK_PM_CLUSTER",
-      "days_to_close": 1400.6
+      "cluster": "KXTAIWANLVL4-27JAN01",
+      "days_to_close": 304.2
     },
     {
       "ticker": "KXBOND-30-CAL",
       "title": "Will Callum Turner be the next James Bond?",
       "side": "NO",
-      "edge": -0.0985,
-      "confidence": 0.759,
+      "edge": -0.145,
+      "confidence": 0.828,
       "directional_agreement": 1.0,
       "mr_agrees": true,
-      "score": 5.44,
-      "portfolio_size": 48.6,
+      "score": 8.12,
+      "portfolio_size": 72.5,
       "category": "Entertainment",
       "cluster": "KXBOND-30",
       "days_to_close": 1400.6
@@ -279,62 +287,62 @@
       "ticker": "POWER-28-DH-DS-DP",
       "title": "Will the Democratic party win the House, the Democratic party win the Senate, and the Democratic party win the Presidenc",
       "side": "NO",
-      "edge": -0.055,
-      "confidence": 0.95,
+      "edge": -0.0685,
+      "confidence": 0.9315,
       "directional_agreement": 1.0,
       "mr_agrees": true,
-      "score": 5.37,
-      "portfolio_size": 33.96,
+      "score": 7.04,
+      "portfolio_size": 34.25,
       "category": "Politics",
       "cluster": "POWER-28-DH-DS",
       "days_to_close": 1345.6
     },
     {
-      "ticker": "KXGTAPRICE-80",
-      "title": "What will the price of GTA VI be?",
-      "side": "YES",
-      "edge": 0.0827,
-      "confidence": 0.95,
+      "ticker": "KXALBERTAREFYES-29",
+      "title": "Will Alberta vote to secede from Canada before the next general election?",
+      "side": "NO",
+      "edge": -0.0862,
+      "confidence": 0.93,
+      "directional_agreement": 0.75,
+      "mr_agrees": false,
+      "score": 6.63,
+      "portfolio_size": 43.11,
+      "category": "Politics",
+      "cluster": "KXALBERTAREFYES",
+      "days_to_close": 1322.6
+    },
+    {
+      "ticker": "APPLEUS-29DEC31",
+      "title": "DOJ wins their anti-trust case against Apple?",
+      "side": "NO",
+      "edge": -0.085,
+      "confidence": 0.7762,
       "directional_agreement": 1.0,
       "mr_agrees": true,
-      "score": 4.37,
-      "portfolio_size": 51.06,
-      "category": "Entertainment",
-      "cluster": "KXGTAPRICE",
+      "score": 5.83,
+      "portfolio_size": 42.5,
+      "category": "Companies",
+      "cluster": "APPLEUS-29DEC31",
       "days_to_close": 1400.6
     },
     {
       "ticker": "KXBLUESPACEX-30",
       "title": "Will Blue Origin land an uncrewed Blue Moon MK1 lander on the moon before SpaceX lands an uncrewed Starship?",
       "side": "NO",
-      "edge": -0.1287,
-      "confidence": 0.8073,
-      "directional_agreement": 1.0,
-      "mr_agrees": true,
-      "score": 4.25,
-      "portfolio_size": 67.56,
+      "edge": -0.19,
+      "confidence": 0.84,
+      "directional_agreement": 0.75,
+      "mr_agrees": false,
+      "score": 5.83,
+      "portfolio_size": 95.0,
       "category": "Science and Technology",
       "cluster": "KXBLUESPACEX",
       "days_to_close": 1400.6
-    },
-    {
-      "ticker": "KXUKPARTY-29-R",
-      "title": "Will Reform win the next U.K. election?",
-      "side": "NO",
-      "edge": -0.0605,
-      "confidence": 0.72,
-      "directional_agreement": 0.75,
-      "mr_agrees": false,
-      "score": 4.06,
-      "portfolio_size": 28.31,
-      "category": "Elections",
-      "cluster": "UK_ELECTION_CLUSTER",
-      "days_to_close": 1277.6
     }
   ],
-  "api_cost": 0.2586,
+  "api_cost": 0.2587,
   "tokens": {
-    "input": 15816,
-    "output": 14075
+    "input": 15961,
+    "output": 14052
   }
 }
