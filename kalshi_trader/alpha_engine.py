@@ -44,11 +44,15 @@ EDGE_CATEGORIES = {
     "Climate and Weather": {"weight": 0.7, "min_edge": 0.08},
     "Financials": {"weight": 1.0, "min_edge": 0.06},
     "Science and Technology": {"weight": 0.6, "min_edge": 0.10},
+    "Entertainment": {"weight": 0.8, "min_edge": 0.08},
+    "Sports": {"weight": 0.7, "min_edge": 0.08},
+    "Social": {"weight": 0.6, "min_edge": 0.10},
+    "Health": {"weight": 0.7, "min_edge": 0.08},
 }
 
 # --- Portfolio constraints ---
 MAX_POSITIONS = 15
-MAX_CLUSTER_PCT = 0.15  # max 15% of portfolio per correlation cluster
+MAX_CLUSTER_PCT = 0.10  # max 10% of portfolio per correlation cluster
 MAX_SINGLE_PCT = 0.08   # max 8% per single trade
 PORTFOLIO_SIZE = 2000    # demo portfolio
 
@@ -164,7 +168,7 @@ def extract_cluster_key(ticker: str, title: str) -> str:
     title_lower = title.lower()
     TITLE_CLUSTERS = {
         "trillionaire": "TRILLIONAIRE_CLUSTER",
-        "musk": "MUSK_CLUSTER",
+        "musk": "TRILLIONAIRE_CLUSTER",
         "next supreme leader of iran": "IRAN_LEADER_CLUSTER",
         "next prime minister of united kingdom": "UK_PM_CLUSTER",
         "next u.k. election": "UK_ELECTION_CLUSTER",
@@ -187,22 +191,30 @@ def days_until_close(close_time: str) -> float:
 
 
 def time_decay_multiplier(days: float) -> float:
-    """Score multiplier favoring sooner-closing markets.
+    """Score multiplier heavily favoring shorter-term markets.
 
-    Markets closing in 7 days get 2x, 30 days get 1.5x, 365 days get 0.7x.
+    Short-term markets get big boosts; anything beyond 1 year is near-zero.
+    This prevents the portfolio from filling with multi-year positions
+    that tie up capital with no near-term resolution.
     """
     if days <= 7:
-        return 2.0
+        return 3.0
+    elif days <= 14:
+        return 2.5
     elif days <= 30:
+        return 2.0
+    elif days <= 60:
         return 1.5
     elif days <= 90:
         return 1.2
     elif days <= 180:
-        return 1.0
-    elif days <= 365:
         return 0.8
+    elif days <= 365:
+        return 0.4
+    elif days <= 730:
+        return 0.15
     else:
-        return 0.6
+        return 0.05
 
 
 def spread_confidence_factor(yes_bid: int, yes_ask: int) -> float:
@@ -308,7 +320,7 @@ class AlphaEngine:
         """Fetch tradeable open markets from Kalshi."""
         events = []
         cursor = None
-        for _ in range(5):
+        for _ in range(8):
             params = {"limit": 100, "status": "open"}
             if cursor:
                 params["cursor"] = cursor
@@ -330,7 +342,7 @@ class AlphaEngine:
                       if e.get("category", "") in EDGE_CATEGORIES}
 
         markets = []
-        for et, cat in list(event_cats.items())[:60]:
+        for et, cat in list(event_cats.items())[:100]:
             resp = requests.get(
                 "https://api.elections.kalshi.com/trade-api/v2/markets",
                 params={"event_ticker": et, "limit": 20, "status": "open"},
@@ -351,6 +363,9 @@ class AlphaEngine:
                         m["_cluster"] = extract_cluster_key(m["ticker"], m.get("title", ""))
                         m["_days_to_close"] = days_until_close(m.get("close_time", ""))
                         m["_spread_factor"] = spread_confidence_factor(yes_bid, yes_ask)
+                        # Hard filter: skip markets closing beyond 5 years
+                        if m["_days_to_close"] > 1825:
+                            continue
                         markets.append(m)
             time.sleep(0.2)
 
