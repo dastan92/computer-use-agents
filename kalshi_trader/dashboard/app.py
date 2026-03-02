@@ -1,7 +1,10 @@
 """Trading dashboard API and web server."""
 
+import asyncio
 import json
+import logging
 import os
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -9,7 +12,48 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Kalshi AI Trader Dashboard")
+logger = logging.getLogger(__name__)
+
+REFRESH_INTERVAL = int(os.getenv("REFRESH_HOURS", "12")) * 3600
+
+
+async def refresh_alpha_data():
+    """Run alpha engine in background to refresh dashboard data."""
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        logger.warning("No ANTHROPIC_API_KEY set, skipping alpha refresh")
+        return
+    try:
+        from kalshi_trader.alpha_engine import AlphaEngine
+        logger.info("Starting alpha engine refresh...")
+        engine = AlphaEngine()
+        # Run in thread pool to avoid blocking the event loop
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, engine.run)
+        logger.info("Alpha engine refresh complete")
+    except Exception as e:
+        logger.error("Alpha engine refresh failed: %s", e)
+
+
+async def periodic_refresh():
+    """Periodically refresh alpha data."""
+    while True:
+        await asyncio.sleep(REFRESH_INTERVAL)
+        await refresh_alpha_data()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run alpha engine on startup and schedule periodic refresh."""
+    # Run initial refresh in background (don't block startup)
+    task = asyncio.create_task(refresh_alpha_data())
+    refresh_task = asyncio.create_task(periodic_refresh())
+    yield
+    refresh_task.cancel()
+    task.cancel()
+
+
+app = FastAPI(title="Kalshi AI Trader Dashboard", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

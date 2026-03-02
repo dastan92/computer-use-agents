@@ -13,8 +13,12 @@ elements/
 *.jpeg
 .DS_Store
 
-# Kalshi trader
+# Kalshi trader - ignore raw data but keep dashboard files
 backtest_data/
+!backtest_data/alpha_report.json
+!backtest_data/live_predictions.json
+!backtest_data/ensemble_backtest.json
+!backtest_data/results/
 *.pem
 kalshi_private_key*
 trading_system.db
