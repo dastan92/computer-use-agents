@@ -12,3 +12,9 @@ elements/
 *.jpg
 *.jpeg
 .DS_Store
+
+# Kalshi trader
+backtest_data/
+*.pem
+kalshi_private_key*
+trading_system.db
