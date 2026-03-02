@@ -191,30 +191,24 @@ def days_until_close(close_time: str) -> float:
 
 
 def time_decay_multiplier(days: float) -> float:
-    """Score multiplier heavily favoring shorter-term markets.
+    """Gentle time preference — slight bonus for shorter, slight penalty for very long.
 
-    Short-term markets get big boosts; anything beyond 1 year is near-zero.
-    This prevents the portfolio from filling with multi-year positions
-    that tie up capital with no near-term resolution.
+    Edge and confidence drive selection, not time horizon. Capital isn't
+    constrained (typically <50% utilization) so no need to penalize long-term
+    markets where AI has the most edge.
     """
-    if days <= 7:
-        return 3.0
-    elif days <= 14:
-        return 2.5
-    elif days <= 30:
-        return 2.0
-    elif days <= 60:
-        return 1.5
+    if days <= 30:
+        return 1.3
     elif days <= 90:
         return 1.2
-    elif days <= 180:
-        return 0.8
     elif days <= 365:
-        return 0.4
+        return 1.0
     elif days <= 730:
-        return 0.15
+        return 0.9
+    elif days <= 1460:
+        return 0.7
     else:
-        return 0.05
+        return 0.5
 
 
 def spread_confidence_factor(yes_bid: int, yes_ask: int) -> float:
