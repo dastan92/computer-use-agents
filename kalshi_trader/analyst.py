@@ -226,11 +226,12 @@ class ClaudeAnalyst:
     """
 
     def __init__(self, config: ClaudeConfig, blind_mode: bool = False,
-                 anonymize: bool = False):
+                 anonymize: bool = False, tracker=None):
         self.config = config
         self.client = anthropic.Anthropic(api_key=config.api_key)
         self.blind_mode = blind_mode
         self.anonymize = anonymize
+        self.tracker = tracker  # optional Tracker instance for persistent logging
         self.call_count = 0
         self.total_input_tokens = 0
         self.total_output_tokens = 0
@@ -238,8 +239,9 @@ class ClaudeAnalyst:
     def _get_system_prompt(self) -> str:
         return SYSTEM_PROMPT_BLIND if self.blind_mode else SYSTEM_PROMPT
 
-    def _call_claude(self, user_prompt: str) -> str:
-        """Make a call to Claude and track usage."""
+    def _call_claude(self, user_prompt: str, call_type: str = "single_analysis",
+                     market_tickers: Optional[list[str]] = None) -> str:
+        """Make a call to Claude, track usage, and log to tracker DB."""
         response = self.client.messages.create(
             model=self.config.model,
             max_tokens=self.config.max_tokens,
@@ -248,9 +250,25 @@ class ClaudeAnalyst:
             messages=[{"role": "user", "content": user_prompt}],
         )
 
+        inp = response.usage.input_tokens
+        out = response.usage.output_tokens
+        cost = inp * 3 / 1_000_000 + out * 15 / 1_000_000
+
         self.call_count += 1
-        self.total_input_tokens += response.usage.input_tokens
-        self.total_output_tokens += response.usage.output_tokens
+        self.total_input_tokens += inp
+        self.total_output_tokens += out
+
+        # Log to persistent tracker
+        if self.tracker:
+            self.tracker.log_api_call(
+                model=self.config.model,
+                input_tokens=inp,
+                output_tokens=out,
+                cost_usd=cost,
+                call_type=call_type,
+                market_tickers=market_tickers,
+                blind_mode=self.blind_mode,
+            )
 
         text = response.content[0].text
 
@@ -297,7 +315,9 @@ class ClaudeAnalyst:
             )
 
         try:
-            result_text = self._call_claude(prompt)
+            result_text = self._call_claude(
+                prompt, call_type="single_analysis", market_tickers=[market.ticker]
+            )
             result = json.loads(result_text)
 
             ai_prob = float(result["ai_probability"])
@@ -378,7 +398,10 @@ class ClaudeAnalyst:
             )
 
         try:
-            result_text = self._call_claude(prompt)
+            tickers = [m.ticker for m in markets]
+            result_text = self._call_claude(
+                prompt, call_type="batch_analysis", market_tickers=tickers
+            )
             results = json.loads(result_text)
 
             analyses = []

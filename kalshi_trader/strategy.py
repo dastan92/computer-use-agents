@@ -38,10 +38,12 @@ class TradingStrategy:
         config: AppConfig,
         client: KalshiClient,
         analyst: ClaudeAnalyst,
+        tracker=None,
     ):
         self.config = config
         self.client = client
         self.analyst = analyst
+        self.tracker = tracker  # optional Tracker for persistent logging
         self.trading_config = config.trading
 
     def scan_candidates(self) -> list[Market]:
@@ -200,6 +202,9 @@ class TradingStrategy:
             print(f"  Edge: {signal.edge:+.1%} | Confidence: {signal.confidence:.1%}")
             print(f"  Reasoning: {signal.reasoning[:120]}...")
 
+            mode = "dry_run" if dry_run else "live"
+            fees = self.config.backtest.commission_per_contract * signal.size
+
             if dry_run:
                 results.append(
                     {
@@ -233,6 +238,22 @@ class TradingStrategy:
                             "error": str(e),
                         }
                     )
+
+            # Log trade to persistent tracker
+            if self.tracker:
+                self.tracker.log_trade(
+                    ticker=signal.ticker,
+                    side=signal.side.value,
+                    action=signal.action.value,
+                    price_cents=signal.target_price,
+                    contracts=signal.size,
+                    fees_usd=fees,
+                    mode=mode,
+                    ai_probability=None,
+                    market_probability=None,
+                    edge=signal.edge,
+                    confidence=signal.confidence,
+                )
 
         return results
 

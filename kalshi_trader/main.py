@@ -10,6 +10,7 @@ Usage:
     python -m kalshi_trader backtest --check-contamination  # Run contamination comparison
     python -m kalshi_trader collect           # Collect market data for backtesting
     python -m kalshi_trader analyze TICKER    # Deep-analyze a single market
+    python -m kalshi_trader costs             # View daily cost & P&L report
 """
 
 import argparse
@@ -24,6 +25,7 @@ from .backtester import Backtester
 from .config import AppConfig
 from .kalshi_client import KalshiClient
 from .strategy import TradingStrategy
+from .tracker import Tracker
 
 
 def setup_logging(verbose: bool = False):
@@ -37,9 +39,10 @@ def setup_logging(verbose: bool = False):
 
 def cmd_scan(args, config: AppConfig):
     """Scan markets and show Claude's analysis."""
+    tracker = Tracker()
     client = KalshiClient(config.kalshi)
-    analyst = ClaudeAnalyst(config.claude)
-    strategy = TradingStrategy(config, client, analyst)
+    analyst = ClaudeAnalyst(config.claude, tracker=tracker)
+    strategy = TradingStrategy(config, client, analyst, tracker=tracker)
 
     candidates = strategy.scan_candidates()
     if not candidates:
@@ -76,9 +79,16 @@ def cmd_scan(args, config: AppConfig):
 
 def cmd_trade(args, config: AppConfig):
     """Generate and optionally execute trade signals."""
+    tracker = Tracker()
+
+    # Check daily API budget before proceeding
+    if not tracker.check_daily_budget(config.schedule.max_daily_api_cost_usd):
+        print(f"Daily API budget exceeded (${config.schedule.max_daily_api_cost_usd:.2f}). Skipping.")
+        return
+
     client = KalshiClient(config.kalshi)
-    analyst = ClaudeAnalyst(config.claude)
-    strategy = TradingStrategy(config, client, analyst)
+    analyst = ClaudeAnalyst(config.claude, tracker=tracker)
+    strategy = TradingStrategy(config, client, analyst, tracker=tracker)
 
     dry_run = not args.live
 
@@ -100,12 +110,13 @@ def cmd_trade(args, config: AppConfig):
 
 def cmd_backtest(args, config: AppConfig):
     """Run a backtest against settled markets."""
+    tracker = Tracker()
     client = KalshiClient(config.kalshi)
 
     # Configure analyst based on flags
     blind_mode = args.blind or config.backtest.hide_market_price
     anonymize = args.anonymize or config.backtest.anonymize_markets
-    analyst = ClaudeAnalyst(config.claude, blind_mode=blind_mode, anonymize=anonymize)
+    analyst = ClaudeAnalyst(config.claude, blind_mode=blind_mode, anonymize=anonymize, tracker=tracker)
     backtester = Backtester(config, analyst)
 
     # Override min_close_date if specified
@@ -186,10 +197,17 @@ def cmd_collect(args, config: AppConfig):
     print(f"  Saved to: {save_path}")
 
 
+def cmd_costs(args, config: AppConfig):
+    """View daily cost and P&L report."""
+    tracker = Tracker()
+    tracker.print_daily_report(days=args.days)
+
+
 def cmd_analyze(args, config: AppConfig):
     """Deep-analyze a single market."""
+    tracker = Tracker()
     client = KalshiClient(config.kalshi)
-    analyst = ClaudeAnalyst(config.claude)
+    analyst = ClaudeAnalyst(config.claude, tracker=tracker)
 
     print(f"Fetching market {args.ticker}...")
     market = client.get_market(args.ticker)
@@ -248,6 +266,8 @@ Examples:
   python -m kalshi_trader collect --limit 200           # Collect data for backtesting
   python -m kalshi_trader trade                         # Dry-run trade signals
   python -m kalshi_trader trade --live                  # LIVE trading
+  python -m kalshi_trader costs                         # Daily cost & P&L report
+  python -m kalshi_trader costs --days 30               # Last 30 days
         """,
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
@@ -298,6 +318,10 @@ Examples:
     p_collect.add_argument("--limit", type=int, default=200, help="Number of markets")
     p_collect.add_argument("-o", "--output", help="Output file path")
 
+    # costs
+    p_costs = subparsers.add_parser("costs", help="View daily cost & P&L report")
+    p_costs.add_argument("--days", type=int, default=7, help="Number of days to show")
+
     # analyze
     p_analyze = subparsers.add_parser("analyze", help="Deep-analyze a single market")
     p_analyze.add_argument("ticker", help="Market ticker to analyze")
@@ -316,6 +340,7 @@ Examples:
         "trade": cmd_trade,
         "backtest": cmd_backtest,
         "collect": cmd_collect,
+        "costs": cmd_costs,
         "analyze": cmd_analyze,
     }
 
