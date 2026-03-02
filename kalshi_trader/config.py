@@ -35,7 +35,7 @@ class ClaudeConfig:
     api_key: str = field(
         default_factory=lambda: os.getenv("ANTHROPIC_API_KEY", "")
     )
-    model: str = "claude-sonnet-4-6-20250514"
+    model: str = "claude-4-sonnet-20250514"
     max_tokens: int = 4096
     temperature: float = 0.3
 
