@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "kalshi-ai-trader"
+version = "0.1.0"
+description = "AI-powered prediction market trading system for Kalshi, using Claude Sonnet 4.6"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "anthropic>=0.39.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "cryptography>=42.0.0",
+    "requests>=2.31.0",
+]
+
+[project.scripts]
+kalshi-trader = "kalshi_trader.main:main"
