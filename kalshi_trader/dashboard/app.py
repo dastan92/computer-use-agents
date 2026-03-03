@@ -475,7 +475,7 @@ DASHBOARD_HTML = """\
   <div id="tab-all-predictions" class="tab-content">
     <div class="section-desc">
       Every market the AI analyzed, whether we bet on it or not. Most markets don't pass our filters &mdash;
-      we only bet when the edge is large enough (>3%), enough strategies agree (>75%), and we're confident enough (>50%).
+      we only bet when the edge is large enough (>9%), enough strategies agree (>75%), and we're confident enough (>50%).
     </div>
     <div class="table-card">
       <h3>All Analyzed Markets</h3>

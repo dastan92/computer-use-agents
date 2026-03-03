@@ -312,15 +312,11 @@ def run_timeseries_backtest():
     profit_factor = abs(avg_win * wins / (avg_loss * losses)) if losses and avg_loss else float("inf")
     total_return = cumulative_pnl / PORTFOLIO_SIZE
 
-    # Annualize: figure out time span
-    if daily_values:
-        first_date = daily_values[0][0]
-        last_date = daily_values[-1][0]
-        days_span = max((last_date - first_date).days, 1)
-        annual_return = total_return * (365 / days_span)
-    else:
-        days_span = 0
-        annual_return = 0
+    # Annualize: use actual period boundaries (first/last market settle dates)
+    period_start = market_data[0]["settle_date"]
+    period_end = market_data[-1]["settle_date"]
+    days_span = max((period_end - period_start).days, 1)
+    annual_return = total_return * (365 / days_span) if days_span > 0 else 0
 
     print(f"\n  {'=' * 60}")
     print(f"  PERFORMANCE SUMMARY")
