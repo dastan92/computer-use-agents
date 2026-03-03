@@ -281,6 +281,24 @@ DASHBOARD_HTML = """\
   .pred-bar { height: 8px; border-radius: 4px; background: #1e2a3a; overflow: hidden; margin: 8px 10px; position: relative; }
   .pred-bar-fill { height: 100%; border-radius: 4px; }
   .pred-bar-marker { position: absolute; top: -2px; width: 2px; height: 12px; background: #fff; border-radius: 1px; }
+  .hero-banner {
+    background: linear-gradient(135deg, #064e3b 0%, #111827 50%, #7f1d1d 100%);
+    border: 1px solid #1e2a3a; border-radius: 16px; padding: 28px 32px;
+    margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .hero-main { text-align: left; }
+  .hero-main .hero-label { color: #9ca3af; font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .hero-main .hero-pnl { font-size: 48px; font-weight: 800; letter-spacing: -1px; }
+  .hero-main .hero-pnl.positive { color: #34d399; }
+  .hero-main .hero-pnl.negative { color: #fca5a5; }
+  .hero-main .hero-sub { color: #9ca3af; font-size: 13px; margin-top: 4px; }
+  .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+  .hero-stat { text-align: center; }
+  .hero-stat .hs-val { font-size: 24px; font-weight: 700; color: #e0e0e0; }
+  .hero-stat .hs-val.green { color: #34d399; }
+  .hero-stat .hs-val.red { color: #fca5a5; }
+  .hero-stat .hs-label { color: #6b7280; font-size: 11px; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -292,16 +310,26 @@ DASHBOARD_HTML = """\
   <div class="demo-badge" id="liveBadge">LOADING...</div>
 </div>
 <div class="container">
+  <!-- HERO: Money summary always visible -->
+  <div class="hero-banner" id="heroBanner">
+    <div class="hero-main">
+      <div class="hero-label">Backtested Profit/Loss</div>
+      <div class="hero-pnl positive" id="heroPnl">Loading...</div>
+      <div class="hero-sub" id="heroSub"></div>
+    </div>
+    <div class="hero-stats" id="heroStats"></div>
+  </div>
+
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('portfolio')">Current Bets</div>
-    <div class="tab" onclick="switchTab('performance')">Performance</div>
+    <div class="tab" onclick="switchTab('portfolio')">Current Bets</div>
+    <div class="tab active" onclick="switchTab('performance')">Performance</div>
     <div class="tab" onclick="switchTab('backtest')">Accuracy History</div>
     <div class="tab" onclick="switchTab('strategies')">Strategies</div>
     <div class="tab" onclick="switchTab('all-predictions')">All Markets</div>
   </div>
 
   <!-- PORTFOLIO TAB -->
-  <div id="tab-portfolio" class="tab-content active">
+  <div id="tab-portfolio" class="tab-content">
     <div class="section-desc">
       These are the bets the AI currently recommends. Each card shows a prediction market where our AI
       thinks the true probability differs from what the market is pricing &mdash; that gap is the "edge."
@@ -327,8 +355,8 @@ DASHBOARD_HTML = """\
     </div>
   </div>
 
-  <!-- PERFORMANCE TAB (NEW) -->
-  <div id="tab-performance" class="tab-content">
+  <!-- PERFORMANCE TAB -->
+  <div id="tab-performance" class="tab-content active">
     <div class="section-desc">
       How the strategy would have performed over time, tested on 80 real markets that already settled.
       This simulates entering bets when markets opened and settling them when they closed &mdash;
@@ -490,6 +518,7 @@ async function load() {
     predsRes.length ? `DEMO \u2022 ${predsRes.length} MARKETS` : 'NO DATA';
   document.getElementById('liveBadge').className = 'demo-badge';
 
+  renderHeroBanner(tsRes, reportRes);
   renderPortfolioStats(summaryRes, reportRes);
   renderPortfolio(predsRes);
   renderClusterChart(reportRes);
@@ -504,6 +533,59 @@ async function load() {
   renderEnsembleTable(ensembleRes);
   renderStrategyCharts(ensembleRes);
   renderAllPredictions(predsRes);
+}
+
+function renderHeroBanner(ts, report) {
+  const pnlEl = document.getElementById('heroPnl');
+  const subEl = document.getElementById('heroSub');
+  const statsEl = document.getElementById('heroStats');
+
+  if (!ts || !ts.total_pnl) {
+    pnlEl.textContent = '$0';
+    pnlEl.className = 'hero-pnl positive';
+    subEl.textContent = 'No backtest data yet';
+    return;
+  }
+
+  const pnl = ts.total_pnl;
+  const sign = pnl >= 0 ? '+' : '';
+  pnlEl.textContent = `${sign}$${Math.abs(pnl).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+  pnlEl.className = `hero-pnl ${pnl >= 0 ? 'positive' : 'negative'}`;
+  subEl.textContent = `Started with $${ts.starting_capital.toLocaleString()} \u2192 ended with $${ts.final_value.toLocaleString()} over ${ts.days_span} days (${ts.total_trades} bets)`;
+
+  const retPct = ((ts.total_return||0)*100).toFixed(1);
+  const wrPct = ((ts.win_rate||0)*100).toFixed(0);
+  const pfactor = (ts.profit_factor||0).toFixed(1);
+  const ddPct = ((ts.max_drawdown||0)*100).toFixed(1);
+  const activeBets = report.portfolio_positions || 0;
+  const deployed = (report.total_allocation || 0).toFixed(0);
+
+  statsEl.innerHTML = `
+    <div class="hero-stat">
+      <div class="hs-val ${ts.total_return >= 0 ? 'green' : 'red'}">${retPct}%</div>
+      <div class="hs-label">Total Return</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hs-val">${wrPct}%</div>
+      <div class="hs-label">Win Rate (${ts.wins}W/${ts.losses}L)</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hs-val ${ts.profit_factor >= 1.5 ? 'green' : ''}">${pfactor}x</div>
+      <div class="hs-label">Profit Factor</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hs-val red">${ddPct}%</div>
+      <div class="hs-label">Max Drawdown</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hs-val">${activeBets}</div>
+      <div class="hs-label">Active Bets</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hs-val green">$${deployed}</div>
+      <div class="hs-label">Deployed</div>
+    </div>
+  `;
 }
 
 function renderPortfolioStats(summary, report) {
