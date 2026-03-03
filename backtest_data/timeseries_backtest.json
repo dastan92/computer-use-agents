@@ -3,7 +3,7 @@
   "rules": {
     "no_side_only": true,
     "min_edge": 0.09,
-    "max_contracts": 750,
+    "max_contracts": 9999,
     "max_same_base_ticker": 2,
     "min_agreement": 0.75
   },
@@ -11,41 +11,28 @@
   "period_end": "2026-03-01T04:59:00+00:00",
   "days_span": 401,
   "starting_capital": 2000,
-  "final_value": 3172.94,
-  "total_pnl": 1172.94,
-  "total_return": 0.5865,
-  "annualized_return": 0.5338,
-  "max_drawdown": 0.0559,
-  "total_trades": 11,
+  "final_value": 4433.23,
+  "total_pnl": 2433.23,
+  "total_return": 1.2166,
+  "annualized_return": 1.1074,
+  "max_drawdown": 0.0916,
+  "total_trades": 10,
   "wins": 7,
-  "losses": 4,
-  "win_rate": 0.6364,
-  "avg_win": 204.63,
-  "avg_loss": -64.87,
-  "profit_factor": 5.52,
+  "losses": 3,
+  "win_rate": 0.7,
+  "avg_win": 423.82,
+  "avg_loss": -177.83,
+  "profit_factor": 5.56,
   "monthly_pnl": {
-    "2025-05": -92.6,
-    "2025-10": 37.84,
-    "2025-11": -46.86,
-    "2025-12": 119.46,
-    "2026-01": 69.03,
-    "2026-02": 961.24,
-    "2026-03": 124.83
+    "2025-05": -144.0,
+    "2025-10": 120.83,
+    "2025-11": -149.49,
+    "2025-12": 382.14,
+    "2026-01": 221.25,
+    "2026-02": 1602.46,
+    "2026-03": 400.04
   },
   "trades": [
-    {
-      "date": "2025-05-03",
-      "ticker": "KXPCOIE-28",
-      "title": "Will Perkins Coie win their lawsuit against Trump?",
-      "side": "NO",
-      "edge": -0.09534883720930232,
-      "entry_price": 0.19999999999999996,
-      "contracts": 238,
-      "pnl": -47.59999999999999,
-      "won": false,
-      "cumulative_pnl": -47.59999999999999,
-      "portfolio_value": 1952.4
-    },
     {
       "date": "2025-05-08",
       "ticker": "KXROMANIATOP-30-GS",
@@ -53,11 +40,11 @@
       "side": "NO",
       "edge": -0.09000000000000008,
       "entry_price": 0.25,
-      "contracts": 180,
-      "pnl": -45.0,
+      "contracts": 576,
+      "pnl": -144.0,
       "won": false,
-      "cumulative_pnl": -92.6,
-      "portfolio_value": 1907.4
+      "cumulative_pnl": -144.0,
+      "portfolio_value": 1856.0
     },
     {
       "date": "2025-10-01",
@@ -66,11 +53,11 @@
       "side": "NO",
       "edge": -0.10000000000000003,
       "entry_price": 0.5700000000000001,
-      "contracts": 88,
-      "pnl": 37.839999999999996,
+      "contracts": 281,
+      "pnl": 120.82999999999998,
       "won": true,
-      "cumulative_pnl": -54.76,
-      "portfolio_value": 1945.24
+      "cumulative_pnl": -23.170000000000016,
+      "portfolio_value": 1976.83
     },
     {
       "date": "2025-11-03",
@@ -79,11 +66,11 @@
       "side": "NO",
       "edge": -0.09352941176470586,
       "entry_price": 0.32999999999999996,
-      "contracts": 142,
-      "pnl": -46.85999999999999,
+      "contracts": 453,
+      "pnl": -149.48999999999998,
       "won": false,
-      "cumulative_pnl": -101.61999999999999,
-      "portfolio_value": 1898.38
+      "cumulative_pnl": -172.66,
+      "portfolio_value": 1827.34
     },
     {
       "date": "2025-12-01",
@@ -92,11 +79,11 @@
       "side": "NO",
       "edge": -0.12307692307692308,
       "entry_price": 0.33999999999999997,
-      "contracts": 181,
-      "pnl": 119.46000000000001,
+      "contracts": 579,
+      "pnl": 382.14000000000004,
       "won": true,
-      "cumulative_pnl": 17.840000000000018,
-      "portfolio_value": 2017.84
+      "cumulative_pnl": 209.48000000000005,
+      "portfolio_value": 2209.48
     },
     {
       "date": "2026-01-01",
@@ -105,11 +92,11 @@
       "side": "NO",
       "edge": -0.09600000000000003,
       "entry_price": 0.41000000000000003,
-      "contracts": 117,
-      "pnl": 69.03,
+      "contracts": 375,
+      "pnl": 221.25,
       "won": true,
-      "cumulative_pnl": 86.87000000000002,
-      "portfolio_value": 2086.87
+      "cumulative_pnl": 430.73,
+      "portfolio_value": 2430.73
     },
     {
       "date": "2026-02-01",
@@ -118,11 +105,11 @@
       "side": "NO",
       "edge": -0.10136363636363643,
       "entry_price": 0.45999999999999996,
-      "contracts": 110,
-      "pnl": 59.400000000000006,
+      "contracts": 353,
+      "pnl": 190.62,
       "won": true,
-      "cumulative_pnl": 146.27000000000004,
-      "portfolio_value": 2146.27
+      "cumulative_pnl": 621.35,
+      "portfolio_value": 2621.35
     },
     {
       "date": "2026-02-04",
@@ -131,11 +118,11 @@
       "side": "NO",
       "edge": -0.618076923076923,
       "entry_price": 0.16000000000000003,
-      "contracts": 750,
-      "pnl": -120.00000000000003,
+      "contracts": 1500,
+      "pnl": -240.00000000000006,
       "won": false,
-      "cumulative_pnl": 26.27000000000001,
-      "portfolio_value": 2026.27
+      "cumulative_pnl": 381.34999999999997,
+      "portfolio_value": 2381.35
     },
     {
       "date": "2026-02-26",
@@ -147,8 +134,8 @@
       "contracts": 632,
       "pnl": 391.84,
       "won": true,
-      "cumulative_pnl": 418.11,
-      "portfolio_value": 2418.11
+      "cumulative_pnl": 773.1899999999999,
+      "portfolio_value": 2773.19
     },
     {
       "date": "2026-02-26",
@@ -157,11 +144,11 @@
       "side": "NO",
       "edge": -0.69,
       "entry_price": 0.16000000000000003,
-      "contracts": 750,
-      "pnl": 630.0,
+      "contracts": 1500,
+      "pnl": 1260.0,
       "won": true,
-      "cumulative_pnl": 1048.1100000000001,
-      "portfolio_value": 3048.11
+      "cumulative_pnl": 2033.19,
+      "portfolio_value": 4033.19
     },
     {
       "date": "2026-03-01",
@@ -170,57 +157,53 @@
       "side": "NO",
       "edge": -0.09250000000000003,
       "entry_price": 0.27,
-      "contracts": 171,
-      "pnl": 124.83,
+      "contracts": 548,
+      "pnl": 400.03999999999996,
       "won": true,
-      "cumulative_pnl": 1172.94,
-      "portfolio_value": 3172.94
+      "cumulative_pnl": 2433.23,
+      "portfolio_value": 4433.23
     }
   ],
   "equity_curve": [
     [
-      "2025-05-03T14:49:39.561889+00:00",
-      1952.4
-    ],
-    [
       "2025-05-08T16:45:12.786768+00:00",
-      1907.4
+      1856.0
     ],
     [
       "2025-10-01T03:59:00+00:00",
-      1945.24
+      1976.83
     ],
     [
       "2025-11-03T15:23:35.784665+00:00",
-      1898.38
+      1827.34
     ],
     [
       "2025-12-01T04:59:00+00:00",
-      2017.84
+      2209.48
     ],
     [
       "2026-01-01T04:59:00+00:00",
-      2086.87
+      2430.73
     ],
     [
       "2026-02-01T04:59:00+00:00",
-      2146.27
+      2621.35
     ],
     [
       "2026-02-04T02:58:09+00:00",
-      2026.27
+      2381.35
     ],
     [
       "2026-02-26T22:09:55+00:00",
-      2418.11
+      2773.19
     ],
     [
       "2026-02-26T22:09:55+00:00",
-      3048.11
+      4033.19
     ],
     [
       "2026-03-01T04:59:00+00:00",
-      3172.94
+      4433.23
     ]
   ]
 }

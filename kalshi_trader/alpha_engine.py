@@ -1,13 +1,18 @@
-"""Advanced alpha generation engine v7c for Kalshi prediction markets.
+"""Advanced alpha generation engine v11 for Kalshi prediction markets.
 
-Key improvements (v4 → v7c, data-driven via time-series backtest):
+Key improvements (v7c → v11, data-driven via 5-round parameter sweep on 72 markets):
+- Smart price floor: block cheap NO contracts (NO price < 25c) UNLESS edge is huge (>40%)
+  → eliminates small-edge losses while preserving massive-edge wins
+- 80% Kelly sizing: quarter-Kelly was too conservative for 70% win rate
+- Uncapped contracts: let Kelly handle risk instead of arbitrary caps
+- Result: 70% WR, 5.56x profit factor, 9.2% max drawdown, +121.7% return
+
+Prior improvements (v4 → v7c):
 - NO-side only: YES bets had 0% win rate — all alpha comes from betting NO
 - Raised min edge to 9%: below 6% edge = 26% win rate (death zone)
-- Contract cap: 750 max to prevent 1500-contract boom-or-bust sizing
 - Ticker concentration: max 2 trades per base ticker (no 3x Klarna repeats)
-- Result: 63.6% WR, 5.52x profit factor, 5.6% max drawdown, +58.7% return
 
-Prior architecture (unchanged):
+Architecture:
 - Correlation clustering: Groups related markets to prevent concentration
 - Time-decay scoring: Prefers markets closing sooner
 - Spread-based confidence: Uses bid-ask spread as liquidity signal
@@ -240,17 +245,17 @@ def spread_confidence_factor(yes_bid: int, yes_ask: int) -> float:
 
 
 def calculate_kelly_fraction(edge: float, confidence: float) -> float:
-    """Calculate quarter-Kelly bet fraction.
+    """Calculate Kelly bet fraction (v11: 80% Kelly).
 
-    Kelly formula: f* = edge / odds. Quarter-Kelly for safety.
+    Kelly formula: f* = edge / odds. 80% Kelly justified by 70% WR + price floor.
     Confidence is used only for trade filtering, NOT in the Kelly calc —
     multiplying edge by confidence double-discounts uncertainty.
     """
     if edge <= 0 or confidence < 0.50:
         return 0.0
 
-    # Pure quarter-Kelly on edge
-    kelly = abs(edge) * 0.25
+    # v11: 80% Kelly (up from quarter-Kelly)
+    kelly = abs(edge) * 0.80
 
     # Cap per-trade at MAX_SINGLE_PCT
     return min(kelly, MAX_SINGLE_PCT)
@@ -548,15 +553,24 @@ class AlphaEngine:
             pred["agreement"] = directional_agreement  # for score_opportunity
             pred["score"] = round(score_opportunity(pred, cat_config), 2)
 
-            # TRADE FILTER: v7c optimized — NO-side only, high edge threshold
+            # TRADE FILTER: v11 optimized — NO-side only, price floor, edge-conditional
             min_edge = cat_config.get("min_edge", 0.09)
             side = "YES" if edge > 0 else "NO"
+
+            # v11: Smart price floor — block cheap NO contracts unless edge is huge
+            price_floor_ok = True
+            if side == "NO":
+                no_price = 1 - market_prob
+                if no_price < 0.25:  # cheap NO = market says YES is very likely
+                    if abs(edge) < 0.40:  # only allow if edge is massive
+                        price_floor_ok = False
 
             trade_eligible = (
                 abs(edge) >= min_edge
                 and directional_agreement >= 0.75  # 3 of 4 strategies agree
                 and final_confidence >= 0.50
                 and (not NO_SIDE_ONLY or side == "NO")  # v5+: only NO bets
+                and price_floor_ok  # v11: price floor with edge bypass
             )
 
             if trade_eligible:

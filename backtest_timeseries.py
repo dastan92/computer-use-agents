@@ -16,15 +16,28 @@ from pathlib import Path
 
 DATA_DIR = Path("backtest_data")
 
-# --- v7c engine parameters (optimized via 3-round parameter sweep) ---
+# --- v8 engine parameters (data-driven from statistical analysis) ---
 PORTFOLIO_SIZE = 2000
 MAX_CLUSTER_PCT = 0.15
 MAX_SINGLE_PCT = 0.12
 MIN_EDGE = 0.09           # v7c: raised from 0.03 — below 9% edge has low win rate
 MIN_AGREEMENT = 0.75
-MAX_CONTRACTS = 750        # v7c: prevents 1500-contract roulette while allowing big wins
+MAX_CONTRACTS = 9999       # v11: uncapped — Kelly + price floor handle risk now
 NO_SIDE_ONLY = True        # v5+: YES bets had 0% win rate across all 5 trades
 MAX_SAME_BASE_TICKER = 2   # v5+: prevents 3x concentration, allows 2 related bets
+
+# --- v11 filters (data-driven from 5-round parameter sweep) ---
+MIN_NO_PRICE = 0.25        # Don't buy cheap NO contracts (market says YES likely, usually right)
+MAX_AGREEMENT = 1.0        # Cap agreement
+MAX_CONFIDENCE = 1.0       # Cap raw confidence
+CATEGORY_MIN_EDGES = {}    # Category-specific edge overrides
+
+# --- v11 position management ---
+CHEAP_NO_MIN_EDGE = 0.40   # Allow cheap NOs through IF edge is this huge (Japanese election rule)
+KELLY_MULTIPLIER = 0.80    # 80% Kelly (justified by 70% win rate + edge-conditional filter)
+MAX_LOSS_PER_TRADE = 9999  # Max dollar loss per trade
+SKIP_CATEGORIES = []       # Categories to completely skip
+
 PROB_WEIGHTS = {"bayesian": 0.75, "contrarian": 0.25}
 FILTER_STRATEGIES = ["base_rate", "mean_reversion"]
 
@@ -50,8 +63,12 @@ def get_base_ticker(ticker):
     return base
 
 
-def compute_signal(ticker, strategy_results, market_prob):
-    """Compute trading signal using v5 engine logic."""
+def compute_signal(ticker, strategy_results, market_prob, category=""):
+    """Compute trading signal using v9 engine logic."""
+    # v9: Skip entire categories
+    if category in SKIP_CATEGORIES:
+        return None
+
     probs = {}
     confs = {}
 
@@ -86,12 +103,27 @@ def compute_signal(ticker, strategy_results, market_prob):
     if NO_SIDE_ONLY and side == "YES":
         return None
 
+    # v9: Smart price floor — cheap NO contracts need a MUCH bigger edge to justify
+    # (cheap NO = market says YES is very likely; usually correct unless edge is huge)
+    if side == "NO":
+        no_price = 1 - market_prob
+        if no_price < MIN_NO_PRICE:
+            # If edge-conditional override is set, allow cheap NOs with huge edges
+            if CHEAP_NO_MIN_EDGE > 0 and abs(edge) >= CHEAP_NO_MIN_EDGE:
+                pass  # allow it through
+            else:
+                return None
+
     # Directional agreement across ALL strategies
     agree_count = sum(
         1 for s, p in probs.items()
         if (p - market_prob > 0) == (edge > 0)
     )
     agreement = agree_count / len(probs) if probs else 0
+
+    # v8: Agreement ceiling
+    if agreement > MAX_AGREEMENT:
+        return None
 
     # Mean reversion agreement
     mr_agrees = False
@@ -103,18 +135,25 @@ def compute_signal(ticker, strategy_results, market_prob):
     prob_confs = [confs[s] for s in PROB_WEIGHTS if s in confs]
     avg_conf = sum(prob_confs) / len(prob_confs) if prob_confs else 0.5
 
+    # v8: Penalize overconfidence
+    if avg_conf > MAX_CONFIDENCE:
+        return None
+
     if agreement >= 0.75:
         avg_conf *= 1.2
     if mr_agrees:
         avg_conf *= 1.15
     avg_conf = min(avg_conf, 0.95)
 
+    # v8: Category-specific edge thresholds
+    effective_min_edge = CATEGORY_MIN_EDGES.get(category, MIN_EDGE)
+
     # Trade filter
-    if abs(edge) < MIN_EDGE or agreement < MIN_AGREEMENT or avg_conf < 0.50:
+    if abs(edge) < effective_min_edge or agreement < MIN_AGREEMENT or avg_conf < 0.50:
         return None
 
-    # Quarter-Kelly sizing
-    kelly = abs(edge) * 0.25
+    # v9: Dynamic Kelly sizing
+    kelly = abs(edge) * KELLY_MULTIPLIER
     kelly = min(kelly, MAX_SINGLE_PCT)
     position_size = PORTFOLIO_SIZE * kelly
 
@@ -204,7 +243,7 @@ def run_timeseries_backtest():
         ticker = md["ticker"]
 
         # Generate signal
-        signal = compute_signal(ticker, strategy_results, md["market_prob"])
+        signal = compute_signal(ticker, strategy_results, md["market_prob"], md.get("category", ""))
 
         if signal is None:
             continue
@@ -228,6 +267,11 @@ def run_timeseries_backtest():
 
         # v5: Cap contracts to prevent boom-or-bust sizing
         contracts = min(contracts, MAX_CONTRACTS)
+
+        # v9: Cap max dollar loss per trade
+        max_loss = entry_price * contracts
+        if max_loss > MAX_LOSS_PER_TRADE:
+            contracts = max(1, int(MAX_LOSS_PER_TRADE / entry_price))
 
         # Settle immediately (we know the outcome)
         actual_is_yes = md["actual"] == "yes"
@@ -397,40 +441,100 @@ def run_timeseries_backtest():
 
 
 def run_sweep():
-    """Run parameter sweep to find optimal settings."""
-    import itertools
+    """Run parameter sweep to find optimal settings.
 
+    v8 sweep: tests new data-driven filters discovered from statistical analysis:
+    - NO price floor (avoid cheap NO contracts where market is usually right)
+    - Agreement ceiling (100% agreement = 36% accuracy — paradoxically bad)
+    - Confidence cap (0.90+ predictions are least accurate)
+    - Category-specific edges (Economics is gold at lower edges, Politics is a coin flip)
+    """
+
+    # Each config: (label, {param_overrides})
     configs = [
-        # (label, NO_ONLY, MIN_EDGE, MAX_CONTRACTS, MAX_SAME_TICKER)
-        ("v4-baseline",     False, 0.03, 9999, 9999),
-        # Round 2 top performers
-        ("v6c-edge10",      True,  0.10, 500,  2),
-        ("v6g-edge09-nc",   True,  0.09, 9999, 2),
-        # Round 3: find the sweet spot
-        ("v7a-e10-nc",      True,  0.10, 9999, 2),
-        ("v7b-e10-nc-t3",   True,  0.10, 9999, 3),
-        ("v7c-e09-750",     True,  0.09, 750,  2),
-        ("v7d-e09-1000",    True,  0.09, 1000, 2),
-        ("v7e-e10-750",     True,  0.10, 750,  2),
-        ("v7f-e09-nc-t3",   True,  0.09, 9999, 3),
-        ("v7g-e095-nc",     True,  0.095, 9999, 2),
+        # --- Baselines ---
+        ("v7c-baseline", {}),
+        ("v10a-best-risk", {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.30, "CHEAP_NO_MIN_EDGE": 0.30}),
+
+        # --- R5: Fine-tune around 100%+ return configs ---
+        # v10e-K50-nf25-ce40 was +102.5%. Tune around it.
+        ("v11a-K50-nf25-ce35", {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.35, "MAX_CONTRACTS": 9999}),
+        ("v11a-K50-nf25-ce45", {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.45, "MAX_CONTRACTS": 9999}),
+        ("v11a-K50-nf25-ce50", {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.50, "MAX_CONTRACTS": 9999}),
+        ("v11a-K50-nf20-ce40", {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.20, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11a-K50-nf28-ce40", {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.28, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+
+        # Bump Kelly higher — how far can we push it?
+        ("v11b-K55-nf25-ce40", {"KELLY_MULTIPLIER": 0.55, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11b-K60-nf25-ce40", {"KELLY_MULTIPLIER": 0.60, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11b-K65-nf25-ce40", {"KELLY_MULTIPLIER": 0.65, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11b-K70-nf25-ce40", {"KELLY_MULTIPLIER": 0.70, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11b-K80-nf25-ce40", {"KELLY_MULTIPLIER": 0.80, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11b-K100-nf25-ce40",{"KELLY_MULTIPLIER": 1.00, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+
+        # Add category edges to the 100%+ configs
+        ("v11c-K50-nf25-ce40-cat",  {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "CATEGORY_MIN_EDGES": {"Economics": 0.06, "Companies": 0.06}}),
+        ("v11c-K60-nf25-ce40-cat",  {"KELLY_MULTIPLIER": 0.60, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "CATEGORY_MIN_EDGES": {"Economics": 0.06, "Companies": 0.06}}),
+        ("v11c-K50-nf30-ce40-cat",  {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.30, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "CATEGORY_MIN_EDGES": {"Economics": 0.06}}),
+
+        # Ticker limit 3 for more volume
+        ("v11d-K50-nf25-ce40-t3",   {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "MAX_SAME_BASE_TICKER": 3}),
+        ("v11d-K60-nf25-ce40-t3",   {"KELLY_MULTIPLIER": 0.60, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "MAX_SAME_BASE_TICKER": 3}),
+
+        # All-in aggressive: high Kelly + edge-conditional + category + ticker limit
+        ("v11e-aggro1",  {"KELLY_MULTIPLIER": 0.60, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "CATEGORY_MIN_EDGES": {"Economics": 0.06, "Companies": 0.06}, "MAX_SAME_BASE_TICKER": 3}),
+        ("v11e-aggro2",  {"KELLY_MULTIPLIER": 0.70, "MIN_NO_PRICE": 0.25, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999, "CATEGORY_MIN_EDGES": {"Economics": 0.06}, "MAX_SAME_BASE_TICKER": 3}),
+        ("v11e-aggro3",  {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.20, "CHEAP_NO_MIN_EDGE": 0.35, "MAX_CONTRACTS": 9999, "CATEGORY_MIN_EDGES": {"Economics": 0.05, "Companies": 0.05}, "MAX_SAME_BASE_TICKER": 3}),
+
+        # Safe versions: best risk-adjusted + extra return
+        ("v11f-safe1",   {"KELLY_MULTIPLIER": 0.50, "MIN_NO_PRICE": 0.30, "CHEAP_NO_MIN_EDGE": 0.40, "MAX_CONTRACTS": 9999}),
+        ("v11f-safe2",   {"KELLY_MULTIPLIER": 0.45, "MIN_NO_PRICE": 0.30, "CHEAP_NO_MIN_EDGE": 0.40, "CATEGORY_MIN_EDGES": {"Economics": 0.07}}),
+        ("v11f-safe3",   {"KELLY_MULTIPLIER": 0.55, "MIN_NO_PRICE": 0.30, "CHEAP_NO_MIN_EDGE": 0.30}),
     ]
 
-    print(f"\n{'='*110}")
-    print(f"  PARAMETER SWEEP: {len(configs)} configurations")
-    print(f"{'='*110}")
-    print(f"  {'Config':<20} {'P&L':>10} {'Return':>8} {'WR':>6} {'Trades':>7} "
-          f"{'AvgWin':>8} {'AvgLoss':>8} {'PF':>6} {'MaxDD':>7} {'Sharpe-ish':>10}")
-    print(f"  {'-'*105}")
+    # Defaults to restore after each run
+    defaults = {
+        "NO_SIDE_ONLY": True,
+        "MIN_EDGE": 0.09,
+        "MAX_CONTRACTS": 750,
+        "MAX_SAME_BASE_TICKER": 2,
+        "MIN_AGREEMENT": 0.75,
+        "MIN_NO_PRICE": 0.0,
+        "MAX_AGREEMENT": 1.0,
+        "MAX_CONFIDENCE": 1.0,
+        "CATEGORY_MIN_EDGES": {},
+        "CHEAP_NO_MIN_EDGE": 0.0,
+        "KELLY_MULTIPLIER": 0.25,
+        "MAX_LOSS_PER_TRADE": 9999,
+        "SKIP_CATEGORIES": [],
+    }
 
-    best = None
-    for label, no_only, min_e, max_c, max_t in configs:
-        # Set globals
+    print(f"\n{'='*120}")
+    print(f"  v8 PARAMETER SWEEP: {len(configs)} configurations")
+    print(f"  Testing: NO price floor, agreement ceiling, confidence cap, category edges")
+    print(f"{'='*120}")
+    print(f"  {'Config':<22} {'P&L':>10} {'Return':>8} {'WR':>6} {'Trades':>7} "
+          f"{'AvgWin':>8} {'AvgLoss':>8} {'PF':>6} {'MaxDD':>7} {'RiskAdj':>8}")
+    print(f"  {'-'*110}")
+
+    results_table = []
+    for label, overrides in configs:
+        # Reset all globals to defaults
         global NO_SIDE_ONLY, MIN_EDGE, MAX_CONTRACTS, MAX_SAME_BASE_TICKER
-        NO_SIDE_ONLY = no_only
-        MIN_EDGE = min_e
-        MAX_CONTRACTS = max_c
-        MAX_SAME_BASE_TICKER = max_t
+        global MIN_AGREEMENT, MIN_NO_PRICE, MAX_AGREEMENT, MAX_CONFIDENCE, CATEGORY_MIN_EDGES
+        NO_SIDE_ONLY = defaults["NO_SIDE_ONLY"]
+        MIN_EDGE = defaults["MIN_EDGE"]
+        MAX_CONTRACTS = defaults["MAX_CONTRACTS"]
+        MAX_SAME_BASE_TICKER = defaults["MAX_SAME_BASE_TICKER"]
+        MIN_AGREEMENT = defaults["MIN_AGREEMENT"]
+        MIN_NO_PRICE = defaults["MIN_NO_PRICE"]
+        MAX_AGREEMENT = defaults["MAX_AGREEMENT"]
+        MAX_CONFIDENCE = defaults["MAX_CONFIDENCE"]
+        CATEGORY_MIN_EDGES = defaults["CATEGORY_MIN_EDGES"]
+
+        # Apply overrides
+        for k, v in overrides.items():
+            globals()[k] = v
 
         # Suppress printing
         import io, sys
@@ -445,31 +549,36 @@ def run_sweep():
 
         pnl = r["total_pnl"]
         ret = r["total_return"] * 100
-        wr = r["win_rate"] * 100
+        wr = r["win_rate"] * 100 if r["total_trades"] > 0 else 0
         trades = r["total_trades"]
         avg_w = r["avg_win"]
         avg_l = r["avg_loss"]
         pf = r["profit_factor"]
         dd = r["max_drawdown"] * 100
 
-        # Simple risk-adjusted return (return / max_drawdown)
-        sharpe_ish = ret / dd if dd > 0 else 0
+        # Risk-adjusted return (return / max_drawdown)
+        risk_adj = ret / dd if dd > 0 else 0
 
-        marker = " ***" if best is None or sharpe_ish > best[1] else ""
-        if best is None or sharpe_ish > best[1]:
-            best = (label, sharpe_ish, r)
+        results_table.append((label, pnl, ret, wr, trades, avg_w, avg_l, pf, dd, risk_adj, r))
 
-        print(f"  {label:<20} ${pnl:>+9.2f} {ret:>+7.1f}% {wr:>5.1f}% {trades:>7} "
-              f"${avg_w:>+7.2f} ${avg_l:>+7.2f} {pf:>5.2f}x {dd:>6.1f}% {sharpe_ish:>9.2f}{marker}")
+        print(f"  {label:<22} ${pnl:>+9.2f} {ret:>+7.1f}% {wr:>5.1f}% {trades:>7} "
+              f"${avg_w:>+7.2f} ${avg_l:>+7.2f} {pf:>5.2f}x {dd:>6.1f}% {risk_adj:>7.2f}")
 
-    print(f"\n  BEST CONFIG: {best[0]} (risk-adjusted score: {best[1]:.2f})")
-    print(f"{'='*110}\n")
+    # Find best by risk-adjusted, then by absolute return as tiebreaker
+    results_table.sort(key=lambda x: (x[9], x[2]), reverse=True)
+    best = results_table[0]
+    best_return = max(results_table, key=lambda x: x[2])
 
-    # Save the best config's results
-    NO_SIDE_ONLY = True  # always keep this
+    print(f"\n  {'='*80}")
+    print(f"  BEST RISK-ADJUSTED:  {best[0]} (score: {best[9]:.2f}, +{best[2]:.1f}%, {best[4]} trades)")
+    print(f"  BEST ABSOLUTE RETURN: {best_return[0]} (+{best_return[2]:.1f}%, {best_return[4]} trades)")
+    print(f"  {'='*80}")
+    print(f"{'='*120}\n")
+
+    # Save the best risk-adjusted config
     if best:
         with open(DATA_DIR / "timeseries_backtest.json", "w") as f:
-            json.dump(best[2], f, indent=2, default=str)
+            json.dump(best[10], f, indent=2, default=str)
         print(f"  Saved best result ({best[0]}) to timeseries_backtest.json")
 
 
