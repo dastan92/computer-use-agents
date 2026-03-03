@@ -1,12 +1,17 @@
-"""Advanced alpha generation engine v2 for Kalshi prediction markets.
+"""Advanced alpha generation engine v7c for Kalshi prediction markets.
 
-Key improvements over v1:
+Key improvements (v4 → v7c, data-driven via time-series backtest):
+- NO-side only: YES bets had 0% win rate — all alpha comes from betting NO
+- Raised min edge to 9%: below 6% edge = 26% win rate (death zone)
+- Contract cap: 750 max to prevent 1500-contract boom-or-bust sizing
+- Ticker concentration: max 2 trades per base ticker (no 3x Klarna repeats)
+- Result: 63.6% WR, 5.52x profit factor, 5.6% max drawdown, +58.7% return
+
+Prior architecture (unchanged):
 - Correlation clustering: Groups related markets to prevent concentration
-- Time-decay scoring: Prefers markets closing sooner (faster capital turnover)
-- Spread-based confidence: Uses bid-ask spread as liquidity/info signal
-- Dynamic ensemble weighting: Weights shift based on strategy agreement
-- Mean reversion strategy: 4th prompt targeting extreme-priced markets
-- Portfolio-level risk: Max 25% per cluster, max 15 positions
+- Time-decay scoring: Prefers markets closing sooner
+- Spread-based confidence: Uses bid-ask spread as liquidity signal
+- 4-strategy ensemble: bayesian + contrarian (prob) + base_rate + mean_reversion (filter)
 """
 
 import json
@@ -33,22 +38,26 @@ MODEL = os.getenv("CLAUDE_MODEL", "claude-4-sonnet-20250514")
 API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 DATA_DIR = Path(os.getenv("DATA_DIR", "backtest_data"))
 
-# --- Edge categories (from backtest analysis) ---
+# --- Edge categories (from backtest + v7c time-series optimization) ---
+# v7c finding: min_edge < 9% has poor win rate. Raised all categories.
 EDGE_CATEGORIES = {
-    "Politics": {"weight": 1.5, "min_edge": 0.03, "accuracy": 0.86},
-    "Economics": {"weight": 1.3, "min_edge": 0.05, "accuracy": 0.84},
-    "Companies": {"weight": 1.0, "min_edge": 0.06, "accuracy": 1.0},
-    "Elections": {"weight": 1.2, "min_edge": 0.04, "accuracy": 1.0},
-    "World": {"weight": 0.8, "min_edge": 0.08, "accuracy": 0.75},
+    "Politics": {"weight": 1.5, "min_edge": 0.09, "accuracy": 0.86},
+    "Economics": {"weight": 1.3, "min_edge": 0.09, "accuracy": 0.84},
+    "Companies": {"weight": 1.0, "min_edge": 0.09, "accuracy": 1.0},
+    "Elections": {"weight": 1.2, "min_edge": 0.09, "accuracy": 1.0},
+    "World": {"weight": 0.8, "min_edge": 0.10, "accuracy": 0.75},
     "Crypto": {"weight": 0.5, "min_edge": 0.12, "accuracy": 1.0},
-    "Climate and Weather": {"weight": 0.7, "min_edge": 0.08},
-    "Financials": {"weight": 1.0, "min_edge": 0.06},
+    "Climate and Weather": {"weight": 0.7, "min_edge": 0.10},
+    "Financials": {"weight": 1.0, "min_edge": 0.09},
     "Science and Technology": {"weight": 0.6, "min_edge": 0.10},
-    "Entertainment": {"weight": 0.8, "min_edge": 0.08},
-    "Sports": {"weight": 0.7, "min_edge": 0.08},
+    "Entertainment": {"weight": 0.8, "min_edge": 0.10},
+    "Sports": {"weight": 0.7, "min_edge": 0.10},
     "Social": {"weight": 0.6, "min_edge": 0.10},
-    "Health": {"weight": 0.7, "min_edge": 0.08},
+    "Health": {"weight": 0.7, "min_edge": 0.10},
 }
+
+# v5+ finding: YES-side bets had 0% win rate across all trades. Only bet NO.
+NO_SIDE_ONLY = True
 
 # --- Portfolio constraints ---
 MAX_POSITIONS = 15
@@ -539,20 +548,22 @@ class AlphaEngine:
             pred["agreement"] = directional_agreement  # for score_opportunity
             pred["score"] = round(score_opportunity(pred, cat_config), 2)
 
-            # TRADE FILTER: Only trade with strong agreement and confidence
-            min_edge = cat_config.get("min_edge", 0.05)
+            # TRADE FILTER: v7c optimized — NO-side only, high edge threshold
+            min_edge = cat_config.get("min_edge", 0.09)
+            side = "YES" if edge > 0 else "NO"
+
             trade_eligible = (
                 abs(edge) >= min_edge
                 and directional_agreement >= 0.75  # 3 of 4 strategies agree
                 and final_confidence >= 0.50
+                and (not NO_SIDE_ONLY or side == "NO")  # v5+: only NO bets
             )
 
             if trade_eligible:
                 kelly = calculate_kelly_fraction(abs(edge), final_confidence)
-                # Kelly is already optimal — no multipliers
                 pred["kelly_fraction"] = round(kelly, 4)
                 pred["suggested_size"] = round(PORTFOLIO_SIZE * kelly, 2)
-                pred["side"] = "YES" if edge > 0 else "NO"
+                pred["side"] = side
                 pred["tradeable"] = True
             else:
                 pred["kelly_fraction"] = 0

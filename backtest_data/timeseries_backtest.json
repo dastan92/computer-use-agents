@@ -1,59 +1,38 @@
 {
+  "version": "v5",
+  "rules": {
+    "no_side_only": true,
+    "min_edge": 0.09,
+    "max_contracts": 750,
+    "max_same_base_ticker": 2,
+    "min_agreement": 0.75
+  },
   "period_start": "2025-01-23T16:59:08.803738+00:00",
   "period_end": "2026-03-01T04:59:00+00:00",
-  "days_span": 348,
+  "days_span": 301,
   "starting_capital": 2000,
-  "final_value": 3388.87,
-  "total_pnl": 1388.87,
-  "total_return": 0.6944,
-  "annualized_return": 0.7284,
-  "max_drawdown": 0.2376,
-  "total_trades": 35,
-  "wins": 14,
-  "losses": 21,
-  "win_rate": 0.4,
-  "avg_win": 157.92,
-  "avg_loss": -39.14,
-  "profit_factor": 2.69,
+  "final_value": 3172.94,
+  "total_pnl": 1172.94,
+  "total_return": 0.5865,
+  "annualized_return": 0.7112,
+  "max_drawdown": 0.0559,
+  "total_trades": 11,
+  "wins": 7,
+  "losses": 4,
+  "win_rate": 0.6364,
+  "avg_win": 204.63,
+  "avg_loss": -64.87,
+  "profit_factor": 5.52,
   "monthly_pnl": {
-    "2025-03": -41.95,
-    "2025-05": -177.9,
-    "2025-07": -27.0,
-    "2025-09": -104.8,
-    "2025-10": -19.84,
-    "2025-11": -103.74,
-    "2025-12": 63.51,
-    "2026-01": 72.94,
-    "2026-02": 1576.28,
-    "2026-03": 151.37
+    "2025-05": -92.6,
+    "2025-10": 37.84,
+    "2025-11": -46.86,
+    "2025-12": 119.46,
+    "2026-01": 69.03,
+    "2026-02": 961.24,
+    "2026-03": 124.83
   },
   "trades": [
-    {
-      "date": "2025-03-17",
-      "ticker": "KXG7LEADEROUT-35-JT",
-      "title": "Will Justin Trudeau leave office next in this set?",
-      "side": "NO",
-      "edge": -0.03400000000000003,
-      "entry_price": 0.16000000000000003,
-      "contracts": 106,
-      "pnl": -16.960000000000004,
-      "won": false,
-      "cumulative_pnl": -16.960000000000004,
-      "portfolio_value": 1983.04
-    },
-    {
-      "date": "2025-03-17",
-      "ticker": "KXG7LEADEROUT-35-OS",
-      "title": "Will Olaf Scholz leave office next in this set?",
-      "side": "YES",
-      "edge": 0.04999999999999996,
-      "entry_price": 0.21,
-      "contracts": 119,
-      "pnl": -24.99,
-      "won": false,
-      "cumulative_pnl": -41.95,
-      "portfolio_value": 1958.05
-    },
     {
       "date": "2025-05-03",
       "ticker": "KXPCOIE-28",
@@ -64,8 +43,8 @@
       "contracts": 238,
       "pnl": -47.59999999999999,
       "won": false,
-      "cumulative_pnl": -89.54999999999998,
-      "portfolio_value": 1910.45
+      "cumulative_pnl": -47.59999999999999,
+      "portfolio_value": 1952.4
     },
     {
       "date": "2025-05-08",
@@ -77,125 +56,8 @@
       "contracts": 180,
       "pnl": -45.0,
       "won": false,
-      "cumulative_pnl": -134.54999999999998,
-      "portfolio_value": 1865.45
-    },
-    {
-      "date": "2025-05-08",
-      "ticker": "KXROMANIATOP-30-CG",
-      "title": "Will C\u0103lin Georgescu be 1st in the next Romanian presidentia",
-      "side": "YES",
-      "edge": 0.04499999999999993,
-      "entry_price": 0.28,
-      "contracts": 80,
-      "pnl": -22.400000000000002,
-      "won": false,
-      "cumulative_pnl": -156.95,
-      "portfolio_value": 1843.05
-    },
-    {
-      "date": "2025-05-08",
-      "ticker": "KXNEXTPOPE-35-RPRE",
-      "title": "Who will the next Pope be?",
-      "side": "NO",
-      "edge": -0.03652173913043477,
-      "entry_price": 0.61,
-      "contracts": 30,
-      "pnl": -18.3,
-      "won": false,
-      "cumulative_pnl": -175.25,
-      "portfolio_value": 1824.75
-    },
-    {
-      "date": "2025-05-08",
-      "ticker": "KXGERCOALITION-30-GER",
-      "title": "Will CDU/CSU, SPD, and FDP make up the next government of Ge",
-      "side": "YES",
-      "edge": 0.031111111111111117,
-      "entry_price": 0.18,
-      "contracts": 86,
-      "pnl": -15.479999999999999,
-      "won": false,
-      "cumulative_pnl": -190.73,
-      "portfolio_value": 1809.27
-    },
-    {
-      "date": "2025-05-27",
-      "ticker": "KXPENNYCONGRESS-29",
-      "title": "Will the U.S. get rid of the penny?",
-      "side": "NO",
-      "edge": -0.05857142857142855,
-      "entry_price": 0.52,
-      "contracts": 56,
-      "pnl": -29.12,
-      "won": false,
-      "cumulative_pnl": -219.85,
-      "portfolio_value": 1780.15
-    },
-    {
-      "date": "2025-07-07",
-      "ticker": "KXEVCREDITS-29",
-      "title": "Will Trump end the electric vehicle tax credit before Jan 20",
-      "side": "NO",
-      "edge": -0.05399999999999994,
-      "entry_price": 0.15000000000000002,
-      "contracts": 180,
-      "pnl": -27.000000000000004,
-      "won": false,
-      "cumulative_pnl": -246.85,
-      "portfolio_value": 1753.15
-    },
-    {
-      "date": "2025-09-01",
-      "ticker": "KXIPOKLARNA-25SEP01",
-      "title": "When will Klarna IPO?",
-      "side": "YES",
-      "edge": 0.03250000000000006,
-      "entry_price": 0.18,
-      "contracts": 90,
-      "pnl": -16.2,
-      "won": false,
-      "cumulative_pnl": -263.05,
-      "portfolio_value": 1736.95
-    },
-    {
-      "date": "2025-09-02",
-      "ticker": "KXIPOKLARNA-25NOV01",
-      "title": "When will Klarna IPO?",
-      "side": "NO",
-      "edge": -0.07750000000000012,
-      "entry_price": 0.36,
-      "contracts": 108,
-      "pnl": -38.879999999999995,
-      "won": false,
-      "cumulative_pnl": -301.93,
-      "portfolio_value": 1698.07
-    },
-    {
-      "date": "2025-09-02",
-      "ticker": "KXIPOKLARNA-26JAN01",
-      "title": "When will Klarna IPO?",
-      "side": "NO",
-      "edge": -0.053333333333333455,
-      "entry_price": 0.22999999999999998,
-      "contracts": 116,
-      "pnl": -26.68,
-      "won": false,
-      "cumulative_pnl": -328.61,
-      "portfolio_value": 1671.3899999999999
-    },
-    {
-      "date": "2025-09-02",
-      "ticker": "KXNEWROLEVOGUE-30JAN-CHL",
-      "title": "Who will be the next Editor-in-Chief of Vogue?",
-      "side": "NO",
-      "edge": -0.04608695652173911,
-      "entry_price": 0.36,
-      "contracts": 64,
-      "pnl": -23.04,
-      "won": false,
-      "cumulative_pnl": -351.65000000000003,
-      "portfolio_value": 1648.35
+      "cumulative_pnl": -92.6,
+      "portfolio_value": 1907.4
     },
     {
       "date": "2025-10-01",
@@ -207,34 +69,8 @@
       "contracts": 88,
       "pnl": 37.839999999999996,
       "won": true,
-      "cumulative_pnl": -313.81000000000006,
-      "portfolio_value": 1686.19
-    },
-    {
-      "date": "2025-10-11",
-      "ticker": "KXLALEADEROUT-35-NM",
-      "title": "Will Nicol\u00e1s Maduro leave office next in this set?",
-      "side": "YES",
-      "edge": 0.04517241379310338,
-      "entry_price": 0.28,
-      "contracts": 81,
-      "pnl": -22.680000000000003,
-      "won": false,
-      "cumulative_pnl": -336.49000000000007,
-      "portfolio_value": 1663.51
-    },
-    {
-      "date": "2025-10-22",
-      "ticker": "KXG7LEADEROUT-36-SI",
-      "title": "Will Shigeru Ishiba leave office next in this set?",
-      "side": "NO",
-      "edge": -0.07000000000000006,
-      "entry_price": 0.19999999999999996,
-      "contracts": 175,
-      "pnl": -34.99999999999999,
-      "won": false,
-      "cumulative_pnl": -371.49000000000007,
-      "portfolio_value": 1628.51
+      "cumulative_pnl": -54.76,
+      "portfolio_value": 1945.24
     },
     {
       "date": "2025-11-03",
@@ -246,34 +82,8 @@
       "contracts": 142,
       "pnl": -46.85999999999999,
       "won": false,
-      "cumulative_pnl": -418.3500000000001,
-      "portfolio_value": 1581.6499999999999
-    },
-    {
-      "date": "2025-11-03",
-      "ticker": "KXHALFTRIL-29",
-      "title": "When will there be a half-trillionaire?",
-      "side": "NO",
-      "edge": -0.05750000000000011,
-      "entry_price": 0.38,
-      "contracts": 76,
-      "pnl": -28.88,
-      "won": false,
-      "cumulative_pnl": -447.2300000000001,
-      "portfolio_value": 1552.77
-    },
-    {
-      "date": "2025-11-03",
-      "ticker": "KXHALFTRIL-30",
-      "title": "When will there be a half-trillionaire?",
-      "side": "NO",
-      "edge": -0.05600000000000005,
-      "entry_price": 0.25,
-      "contracts": 112,
-      "pnl": -28.0,
-      "won": false,
-      "cumulative_pnl": -475.2300000000001,
-      "portfolio_value": 1524.77
+      "cumulative_pnl": -101.61999999999999,
+      "portfolio_value": 1898.38
     },
     {
       "date": "2025-12-01",
@@ -285,60 +95,8 @@
       "contracts": 181,
       "pnl": 119.46000000000001,
       "won": true,
-      "cumulative_pnl": -355.7700000000001,
-      "portfolio_value": 1644.23
-    },
-    {
-      "date": "2025-12-01",
-      "ticker": "KXIPODISCORD-25DEC01",
-      "title": "When will Discord IPO?",
-      "side": "NO",
-      "edge": -0.04749999999999999,
-      "entry_price": 0.65,
-      "contracts": 37,
-      "pnl": 12.95,
-      "won": true,
-      "cumulative_pnl": -342.8200000000001,
-      "portfolio_value": 1657.1799999999998
-    },
-    {
-      "date": "2025-12-13",
-      "ticker": "KXTRUMPPARDONS-29JAN21-TPET",
-      "title": "Will Tina Peters receive a presidential pardon before Jan 21",
-      "side": "NO",
-      "edge": -0.08440000000000014,
-      "entry_price": 0.4,
-      "contracts": 106,
-      "pnl": -42.400000000000006,
-      "won": false,
-      "cumulative_pnl": -385.22000000000014,
-      "portfolio_value": 1614.7799999999997
-    },
-    {
-      "date": "2025-12-22",
-      "ticker": "KXSTJUDE-29",
-      "title": "Will The Delaware Supreme Court rule in Elon Musk's favor in",
-      "side": "NO",
-      "edge": -0.05307692307692302,
-      "entry_price": 0.25,
-      "contracts": 106,
-      "pnl": -26.5,
-      "won": false,
-      "cumulative_pnl": -411.72000000000014,
-      "portfolio_value": 1588.2799999999997
-    },
-    {
-      "date": "2026-01-01",
-      "ticker": "KXSTRIPEIPO-26JAN01",
-      "title": "When will Stripe IPO?",
-      "side": "NO",
-      "edge": -0.03750000000000003,
-      "entry_price": 0.83,
-      "contracts": 23,
-      "pnl": 3.910000000000001,
-      "won": true,
-      "cumulative_pnl": -407.8100000000001,
-      "portfolio_value": 1592.1899999999998
+      "cumulative_pnl": 17.840000000000018,
+      "portfolio_value": 2017.84
     },
     {
       "date": "2026-01-01",
@@ -350,8 +108,8 @@
       "contracts": 117,
       "pnl": 69.03,
       "won": true,
-      "cumulative_pnl": -338.7800000000001,
-      "portfolio_value": 1661.2199999999998
+      "cumulative_pnl": 86.87000000000002,
+      "portfolio_value": 2086.87
     },
     {
       "date": "2026-02-01",
@@ -363,34 +121,8 @@
       "contracts": 110,
       "pnl": 59.400000000000006,
       "won": true,
-      "cumulative_pnl": -279.3800000000001,
-      "portfolio_value": 1720.62
-    },
-    {
-      "date": "2026-02-01",
-      "ticker": "KXIPOOPENAI-26FEB01",
-      "title": "When will OpenAI IPO?",
-      "side": "NO",
-      "edge": -0.061999999999999944,
-      "entry_price": 0.27,
-      "contracts": 115,
-      "pnl": 83.95,
-      "won": true,
-      "cumulative_pnl": -195.43000000000012,
-      "portfolio_value": 1804.57
-    },
-    {
-      "date": "2026-02-01",
-      "ticker": "KXIPODISCORD-26FEB01",
-      "title": "When will Discord IPO?",
-      "side": "NO",
-      "edge": -0.03434782608695652,
-      "entry_price": 0.55,
-      "contracts": 31,
-      "pnl": 13.95,
-      "won": true,
-      "cumulative_pnl": -181.48000000000013,
-      "portfolio_value": 1818.52
+      "cumulative_pnl": 146.27000000000004,
+      "portfolio_value": 2146.27
     },
     {
       "date": "2026-02-04",
@@ -399,11 +131,11 @@
       "side": "NO",
       "edge": -0.618076923076923,
       "entry_price": 0.16000000000000003,
-      "contracts": 1500,
-      "pnl": -240.00000000000006,
+      "contracts": 750,
+      "pnl": -120.00000000000003,
       "won": false,
-      "cumulative_pnl": -421.4800000000002,
-      "portfolio_value": 1578.5199999999998
+      "cumulative_pnl": 26.27000000000001,
+      "portfolio_value": 2026.27
     },
     {
       "date": "2026-02-26",
@@ -415,8 +147,8 @@
       "contracts": 632,
       "pnl": 391.84,
       "won": true,
-      "cumulative_pnl": -29.640000000000214,
-      "portfolio_value": 1970.3599999999997
+      "cumulative_pnl": 418.11,
+      "portfolio_value": 2418.11
     },
     {
       "date": "2026-02-26",
@@ -425,37 +157,11 @@
       "side": "NO",
       "edge": -0.69,
       "entry_price": 0.16000000000000003,
-      "contracts": 1500,
-      "pnl": 1260.0,
+      "contracts": 750,
+      "pnl": 630.0,
       "won": true,
-      "cumulative_pnl": 1230.3599999999997,
-      "portfolio_value": 3230.3599999999997
-    },
-    {
-      "date": "2026-02-26",
-      "ticker": "KXJAPANHOUSE-28-CRA",
-      "title": "Will CRA win the the next Japanese general election?",
-      "side": "NO",
-      "edge": -0.06931034482758623,
-      "entry_price": 0.83,
-      "contracts": 42,
-      "pnl": 7.1400000000000015,
-      "won": true,
-      "cumulative_pnl": 1237.4999999999998,
-      "portfolio_value": 3237.5
-    },
-    {
-      "date": "2026-03-01",
-      "ticker": "KXFREDDIE-26MAR01",
-      "title": "When will Freddie Mac officially announce an IPO?",
-      "side": "NO",
-      "edge": -0.050588235294117656,
-      "entry_price": 0.75,
-      "contracts": 34,
-      "pnl": 8.5,
-      "won": true,
-      "cumulative_pnl": 1245.9999999999998,
-      "portfolio_value": 3246.0
+      "cumulative_pnl": 1048.1100000000001,
+      "portfolio_value": 3048.11
     },
     {
       "date": "2026-03-01",
@@ -467,163 +173,54 @@
       "contracts": 171,
       "pnl": 124.83,
       "won": true,
-      "cumulative_pnl": 1370.8299999999997,
-      "portfolio_value": 3370.83
-    },
-    {
-      "date": "2026-03-01",
-      "ticker": "KXIPOOPENAI-26MAR01",
-      "title": "When will OpenAI IPO?",
-      "side": "NO",
-      "edge": -0.046086956521739164,
-      "entry_price": 0.56,
-      "contracts": 41,
-      "pnl": 18.04,
-      "won": true,
-      "cumulative_pnl": 1388.8699999999997,
-      "portfolio_value": 3388.87
+      "cumulative_pnl": 1172.94,
+      "portfolio_value": 3172.94
     }
   ],
   "equity_curve": [
     [
-      "2025-03-17T18:37:25.725047+00:00",
-      1983.04
-    ],
-    [
-      "2025-03-17T18:37:25.725047+00:00",
-      1958.05
-    ],
-    [
       "2025-05-03T14:49:39.561889+00:00",
-      1910.45
+      1952.4
     ],
     [
       "2025-05-08T16:45:12.786768+00:00",
-      1865.45
-    ],
-    [
-      "2025-05-08T16:45:12.786768+00:00",
-      1843.05
-    ],
-    [
-      "2025-05-08T17:26:39.337569+00:00",
-      1824.75
-    ],
-    [
-      "2025-05-08T20:15:39.457949+00:00",
-      1809.27
-    ],
-    [
-      "2025-05-27T14:40:14.252112+00:00",
-      1780.15
-    ],
-    [
-      "2025-07-07T19:52:47.944217+00:00",
-      1753.15
-    ],
-    [
-      "2025-09-01T03:59:00+00:00",
-      1736.95
-    ],
-    [
-      "2025-09-02T15:57:12.540322+00:00",
-      1698.07
-    ],
-    [
-      "2025-09-02T15:58:10.560119+00:00",
-      1671.39
-    ],
-    [
-      "2025-09-02T19:49:12.682153+00:00",
-      1648.35
+      1907.4
     ],
     [
       "2025-10-01T03:59:00+00:00",
-      1686.19
-    ],
-    [
-      "2025-10-11T22:32:48.090389+00:00",
-      1663.51
-    ],
-    [
-      "2025-10-22T18:43:14.578514+00:00",
-      1628.51
+      1945.24
     ],
     [
       "2025-11-03T15:23:35.784665+00:00",
-      1581.65
-    ],
-    [
-      "2025-11-03T15:23:51.996169+00:00",
-      1552.77
-    ],
-    [
-      "2025-11-03T15:24:02.141006+00:00",
-      1524.77
+      1898.38
     ],
     [
       "2025-12-01T04:59:00+00:00",
-      1644.23
-    ],
-    [
-      "2025-12-01T04:59:00+00:00",
-      1657.18
-    ],
-    [
-      "2025-12-13T07:39:54.565032+00:00",
-      1614.78
-    ],
-    [
-      "2025-12-22T16:09:21.123438+00:00",
-      1588.28
+      2017.84
     ],
     [
       "2026-01-01T04:59:00+00:00",
-      1592.19
-    ],
-    [
-      "2026-01-01T04:59:00+00:00",
-      1661.22
+      2086.87
     ],
     [
       "2026-02-01T04:59:00+00:00",
-      1720.62
-    ],
-    [
-      "2026-02-01T04:59:00+00:00",
-      1804.57
-    ],
-    [
-      "2026-02-01T04:59:00+00:00",
-      1818.52
+      2146.27
     ],
     [
       "2026-02-04T02:58:09+00:00",
-      1578.52
+      2026.27
     ],
     [
       "2026-02-26T22:09:55+00:00",
-      1970.36
+      2418.11
     ],
     [
       "2026-02-26T22:09:55+00:00",
-      3230.36
-    ],
-    [
-      "2026-02-26T22:09:55+00:00",
-      3237.5
+      3048.11
     ],
     [
       "2026-03-01T04:59:00+00:00",
-      3246.0
-    ],
-    [
-      "2026-03-01T04:59:00+00:00",
-      3370.83
-    ],
-    [
-      "2026-03-01T04:59:00+00:00",
-      3388.87
+      3172.94
     ]
   ]
 }

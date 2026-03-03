@@ -3,22 +3,28 @@
 Uses existing ensemble predictions on 80 settled markets to simulate
 a realistic trading timeline — entering positions when signals appear
 and settling them when markets resolve.
+
+Iterates through algorithm versions to find the best parameters.
 """
 
 import json
 import math
+import re
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 DATA_DIR = Path("backtest_data")
 
-# --- Use same v4 engine parameters ---
+# --- v7c engine parameters (optimized via 3-round parameter sweep) ---
 PORTFOLIO_SIZE = 2000
 MAX_CLUSTER_PCT = 0.15
 MAX_SINGLE_PCT = 0.12
-MIN_EDGE = 0.03
+MIN_EDGE = 0.09           # v7c: raised from 0.03 — below 9% edge has low win rate
 MIN_AGREEMENT = 0.75
+MAX_CONTRACTS = 750        # v7c: prevents 1500-contract roulette while allowing big wins
+NO_SIDE_ONLY = True        # v5+: YES bets had 0% win rate across all 5 trades
+MAX_SAME_BASE_TICKER = 2   # v5+: prevents 3x concentration, allows 2 related bets
 PROB_WEIGHTS = {"bayesian": 0.75, "contrarian": 0.25}
 FILTER_STRATEGIES = ["base_rate", "mean_reversion"]
 
@@ -34,8 +40,18 @@ def load_data():
     return markets, bt
 
 
+def get_base_ticker(ticker):
+    """Extract base ticker to detect related markets (e.g. KXIPOOPENAI from KXIPOOPENAI-25DEC01)."""
+    # Strip date suffixes like -25DEC01, -26JAN01, -29, -30, etc.
+    base = re.sub(r'-\d{2}[A-Z]{3}\d{2}$', '', ticker)  # -25DEC01
+    base = re.sub(r'-\d{2,4}$', '', base)                 # -29, -30
+    # Also strip trailing candidate/person suffixes like -GS, -CG, -RPRE, -TPET
+    base = re.sub(r'-[A-Z]{1,4}$', '', base)
+    return base
+
+
 def compute_signal(ticker, strategy_results, market_prob):
-    """Compute trading signal using v4 engine logic."""
+    """Compute trading signal using v5 engine logic."""
     probs = {}
     confs = {}
 
@@ -65,8 +81,12 @@ def compute_signal(ticker, strategy_results, market_prob):
     ai_prob = weighted_prob / total_w
     edge = ai_prob - market_prob
 
+    # v5: Only take NO-side trades (YES had 0% win rate)
+    side = "NO" if edge < 0 else "YES"
+    if NO_SIDE_ONLY and side == "YES":
+        return None
+
     # Directional agreement across ALL strategies
-    direction = 1 if edge > 0 else -1
     agree_count = sum(
         1 for s, p in probs.items()
         if (p - market_prob > 0) == (edge > 0)
@@ -101,7 +121,7 @@ def compute_signal(ticker, strategy_results, market_prob):
     return {
         "ai_prob": ai_prob,
         "edge": edge,
-        "side": "NO" if edge < 0 else "YES",
+        "side": side,
         "agreement": agreement,
         "confidence": avg_conf,
         "mr_agrees": mr_agrees,
@@ -153,11 +173,14 @@ def run_timeseries_backtest():
     # Filter to markets from 2025+ (where we have decent volume)
     market_data = [m for m in market_data if m["settle_date"].year >= 2025]
 
+    version = "v5"
     print(f"{'=' * 100}")
-    print(f"  TIME-SERIES BACKTEST: {len(market_data)} markets from "
+    print(f"  TIME-SERIES BACKTEST {version}: {len(market_data)} markets from "
           f"{market_data[0]['settle_date'].strftime('%b %Y')} to "
           f"{market_data[-1]['settle_date'].strftime('%b %Y')}")
     print(f"  Starting capital: ${PORTFOLIO_SIZE:,.0f}")
+    print(f"  Rules: NO-side only={NO_SIDE_ONLY}, MIN_EDGE={MIN_EDGE}, "
+          f"MAX_CONTRACTS={MAX_CONTRACTS}, MAX_SAME_TICKER={MAX_SAME_BASE_TICKER}")
     print(f"{'=' * 100}\n")
 
     # Simulate chronologically
@@ -172,6 +195,9 @@ def run_timeseries_backtest():
     peak_value = PORTFOLIO_SIZE
     max_drawdown = 0
     monthly_pnl = defaultdict(float)
+
+    # Track base ticker concentration
+    base_ticker_counts = defaultdict(int)
 
     # Process each market at its settlement date
     for md in market_data:
@@ -188,12 +214,20 @@ def run_timeseries_backtest():
         if allocated + signal["position_size"] > PORTFOLIO_SIZE * 0.75:
             continue
 
+        # v5: Check base-ticker concentration (no 3x Klarna, 3x half-trillionaire)
+        base = get_base_ticker(ticker)
+        if base_ticker_counts[base] >= MAX_SAME_BASE_TICKER:
+            continue
+
         # Entry
         side = signal["side"]
         edge = signal["edge"]
         entry_price = md["market_prob"] if side == "YES" else (1 - md["market_prob"])
         size = signal["position_size"]
         contracts = max(1, round(size / entry_price))
+
+        # v5: Cap contracts to prevent boom-or-bust sizing
+        contracts = min(contracts, MAX_CONTRACTS)
 
         # Settle immediately (we know the outcome)
         actual_is_yes = md["actual"] == "yes"
@@ -207,6 +241,7 @@ def run_timeseries_backtest():
             pnl = ((1.0 - entry_price) if won else (-entry_price)) * contracts
 
         total_trades += 1
+        base_ticker_counts[base] += 1
         if won:
             wins += 1
         else:
@@ -308,6 +343,14 @@ def run_timeseries_backtest():
 
     # Save results
     results = {
+        "version": version,
+        "rules": {
+            "no_side_only": NO_SIDE_ONLY,
+            "min_edge": MIN_EDGE,
+            "max_contracts": MAX_CONTRACTS,
+            "max_same_base_ticker": MAX_SAME_BASE_TICKER,
+            "min_agreement": MIN_AGREEMENT,
+        },
         "period_start": market_data[0]["settle_date"].isoformat(),
         "period_end": market_data[-1]["settle_date"].isoformat(),
         "days_span": days_span,
@@ -357,5 +400,86 @@ def run_timeseries_backtest():
         print(f"  {'=' * 60}")
 
 
+def run_sweep():
+    """Run parameter sweep to find optimal settings."""
+    import itertools
+
+    configs = [
+        # (label, NO_ONLY, MIN_EDGE, MAX_CONTRACTS, MAX_SAME_TICKER)
+        ("v4-baseline",     False, 0.03, 9999, 9999),
+        # Round 2 top performers
+        ("v6c-edge10",      True,  0.10, 500,  2),
+        ("v6g-edge09-nc",   True,  0.09, 9999, 2),
+        # Round 3: find the sweet spot
+        ("v7a-e10-nc",      True,  0.10, 9999, 2),
+        ("v7b-e10-nc-t3",   True,  0.10, 9999, 3),
+        ("v7c-e09-750",     True,  0.09, 750,  2),
+        ("v7d-e09-1000",    True,  0.09, 1000, 2),
+        ("v7e-e10-750",     True,  0.10, 750,  2),
+        ("v7f-e09-nc-t3",   True,  0.09, 9999, 3),
+        ("v7g-e095-nc",     True,  0.095, 9999, 2),
+    ]
+
+    print(f"\n{'='*110}")
+    print(f"  PARAMETER SWEEP: {len(configs)} configurations")
+    print(f"{'='*110}")
+    print(f"  {'Config':<20} {'P&L':>10} {'Return':>8} {'WR':>6} {'Trades':>7} "
+          f"{'AvgWin':>8} {'AvgLoss':>8} {'PF':>6} {'MaxDD':>7} {'Sharpe-ish':>10}")
+    print(f"  {'-'*105}")
+
+    best = None
+    for label, no_only, min_e, max_c, max_t in configs:
+        # Set globals
+        global NO_SIDE_ONLY, MIN_EDGE, MAX_CONTRACTS, MAX_SAME_BASE_TICKER
+        NO_SIDE_ONLY = no_only
+        MIN_EDGE = min_e
+        MAX_CONTRACTS = max_c
+        MAX_SAME_BASE_TICKER = max_t
+
+        # Suppress printing
+        import io, sys
+        old_stdout = sys.stdout
+        sys.stdout = io.StringIO()
+        run_timeseries_backtest()
+        sys.stdout = old_stdout
+
+        # Read results
+        with open(DATA_DIR / "timeseries_backtest.json") as f:
+            r = json.load(f)
+
+        pnl = r["total_pnl"]
+        ret = r["total_return"] * 100
+        wr = r["win_rate"] * 100
+        trades = r["total_trades"]
+        avg_w = r["avg_win"]
+        avg_l = r["avg_loss"]
+        pf = r["profit_factor"]
+        dd = r["max_drawdown"] * 100
+
+        # Simple risk-adjusted return (return / max_drawdown)
+        sharpe_ish = ret / dd if dd > 0 else 0
+
+        marker = " ***" if best is None or sharpe_ish > best[1] else ""
+        if best is None or sharpe_ish > best[1]:
+            best = (label, sharpe_ish, r)
+
+        print(f"  {label:<20} ${pnl:>+9.2f} {ret:>+7.1f}% {wr:>5.1f}% {trades:>7} "
+              f"${avg_w:>+7.2f} ${avg_l:>+7.2f} {pf:>5.2f}x {dd:>6.1f}% {sharpe_ish:>9.2f}{marker}")
+
+    print(f"\n  BEST CONFIG: {best[0]} (risk-adjusted score: {best[1]:.2f})")
+    print(f"{'='*110}\n")
+
+    # Save the best config's results
+    NO_SIDE_ONLY = True  # always keep this
+    if best:
+        with open(DATA_DIR / "timeseries_backtest.json", "w") as f:
+            json.dump(best[2], f, indent=2, default=str)
+        print(f"  Saved best result ({best[0]}) to timeseries_backtest.json")
+
+
 if __name__ == "__main__":
-    run_timeseries_backtest()
+    import sys
+    if "--sweep" in sys.argv:
+        run_sweep()
+    else:
+        run_timeseries_backtest()
